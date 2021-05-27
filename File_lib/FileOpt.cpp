@@ -3,7 +3,8 @@
 //
 
 #include "FileOpt.h"
-
+//! 获取当前运行路径
+//! \return std::string
 std::string FileOpt::get_current_url() {
 #if 1
     char url[kStdUrlSize] = {};
@@ -43,7 +44,9 @@ std::string FileOpt::get_current_url() {
 #endif
     return std::__cxx11::string(url);
 }
-
+//! 判断当前文件路径是否存在,不存在创建文件夹路径 ex: /a/b/c/d.txt  -> mkdir(/a/b/c)
+//! \param file_url &std::string 文件路径
+//! \return         success[0] fail[-1]
 int FileOpt::judge_dir_exist_and_create(const std::string &file_url) {
     if(file_url.size() == 0){
         return kInvalid;
@@ -67,6 +70,9 @@ int FileOpt::judge_dir_exist_and_create(const std::string &file_url) {
     return 0;
 }
 
+//! 判断当前文件路径是否存在,不存在创建文件夹路径 ex: /a/b/c/d.txt  -> mkdir(/a/b/c)
+//! \param file_url char* 文件路径
+//! \return         success[0]  fail[-1]
 int FileOpt::judge_dir_exist_and_create(const char *file_url) {
 #if 0
     if(file_url == nullptr){
@@ -119,4 +125,5 @@ int FileOpt::judge_dir_exist_and_create(const char *file_url) {
     }
 
 #endif
+    return 0;
 }
