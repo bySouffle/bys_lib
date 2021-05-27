@@ -1,0 +1,18 @@
+/mnt/clion-2021.1.1/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /home/ubuntu/bys_/bys_lib/TypeConversion_tests
+CMake Error at CMakeLists.txt:5 (add_subdirectory):
+  add_subdirectory given source "/googletest-1.10.x" which is not an existing
+  directory.
+
+
+CMake Warning (dev) in CMakeLists.txt:
+  No cmake_minimum_required command is present.  A line of code such as
+
+    cmake_minimum_required(VERSION 3.19)
+
+  should be added at the top of the file.  The version specified may be lower
+  if you wish to support older CMake versions for this project.  For more
+  information run "cmake --help-policy CMP0000".
+This warning is for project developers.  Use -Wno-dev to suppress it.
+
+-- Configuring incomplete, errors occurred!
+See also "/home/ubuntu/bys_/bys_lib/TypeConversion_tests/cmake-build-debug/CMakeFiles/CMakeOutput.log".
