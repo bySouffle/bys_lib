@@ -1,2 +1,0 @@
-/usr/bin/ar qc libTypeConversion_lib.a CMakeFiles/TypeConversion_lib.dir/IntOpt.cpp.o CMakeFiles/TypeConversion_lib.dir/StringOpt.cpp.o CMakeFiles/TypeConversion_lib.dir/ArrOpt.cpp.o
-/usr/bin/ranlib libTypeConversion_lib.a

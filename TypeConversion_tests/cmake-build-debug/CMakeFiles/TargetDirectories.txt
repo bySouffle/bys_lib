@@ -1,3 +1,0 @@
-/home/ubuntu/bys_/bys_lib/TypeConversion_tests/cmake-build-debug/CMakeFiles/edit_cache.dir
-/home/ubuntu/bys_/bys_lib/TypeConversion_tests/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/home/ubuntu/bys_/bys_lib/TypeConversion_tests/cmake-build-debug/CMakeFiles/TypeConversion_lib_tests_run.dir
