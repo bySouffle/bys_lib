@@ -21,14 +21,17 @@ add_executable(bys_lib main.cpp ${mode_file})
 include_directories(File_lib)
 include_directories(NetWork_lib)
 include_directories(TypeConversion_lib)
+include_directories(System_lib)
 
 
 add_subdirectory(File_lib)
 add_subdirectory(NetWork_lib)
 add_subdirectory(TypeConversion_lib)
+add_subdirectory(System_lib)
 
 target_link_libraries(bys_lib File_lib NetWork_lib TypeConversion_lib)
 
 add_subdirectory(File_tests)
 add_subdirectory(NetWork_tests)
 add_subdirectory(TypeConversion_tests)
+add_subdirectory(System_tests)

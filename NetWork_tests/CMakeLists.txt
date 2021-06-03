@@ -13,6 +13,6 @@ add_executable(NetWork_lib_tests_run ${TEST_SOURCES})
 
 # linking File_lib_tests_run with lib which will be tested
 #set(TEST_LIB /NetWork_lib)
-target_link_libraries(File_lib_tests_run NetWork_lib)
+target_link_libraries(NetWork_lib_tests_run NetWork_lib)
 
-target_link_libraries(File_lib_tests_run gtest gtest_main)
+target_link_libraries(NetWork_lib_tests_run gtest gtest_main)
