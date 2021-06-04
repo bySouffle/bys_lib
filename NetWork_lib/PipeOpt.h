@@ -13,8 +13,15 @@ enum DefaultSize{
     kDefaultPipeSize = 65536,       //  kernel 2.6.11 default
 };
 
-class PipeOpt {
+enum Return_Status{
+    kOK = 0,
+    kError = -1,
+};
 
+class PipeOpt {
+public:
+    int create_pipe(int *fd);
+    int create_2way_pipe(int *fd);
 };
 
 

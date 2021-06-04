@@ -5,6 +5,7 @@
 #ifndef BYS_LIB_NETBASE_H
 #define BYS_LIB_NETBASE_H
 
+#include <unistd.h>
 #include <netinet/in.h>
 #include <bits/socket.h>
 
@@ -221,7 +222,7 @@
  *      (2) Client: 在调用connect前设置
  *
  *      option_name:    1. SO_REUSEADDR    重用本地地址
- *                      2. SO_RCVBUF       接收区大小       min:256 max:2048(depend sys)
+ *      设置 buf 系统加倍 2. SO_RCVBUF       接收区大小       min:256 max:2048(depend sys)
  *                      3. SO_SNDBUF       发送区大小       /proc/sys/net/ipv4/tcp_rmem | tcp_wmem
  *                      4. SO_RCVLOWAT     超出水位线通知应用   I/O复用系统调用
  *                      5. SO_SNDLOWAT
@@ -277,6 +278,8 @@
 
 class NetBase {
 public:
+    int redirect_stdout(int be_fd);
+
 
 
 };
