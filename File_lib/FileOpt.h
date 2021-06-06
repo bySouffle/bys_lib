@@ -20,6 +20,8 @@
 #include <string.h>
 #include <string>
 #include "fcntl.h"
+#include <syslog.h>
+
 
 enum LimitSize{
     kMaxFNameSize = 255,
@@ -44,6 +46,7 @@ public:
     int judge_dir_exist_and_create(const std::string &file_url);
     int judge_dir_exist_and_create(const char *file_url);
 
+    int set_fd_nonblocking(int fd);
 
 };
 

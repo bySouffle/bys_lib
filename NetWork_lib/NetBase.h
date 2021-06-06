@@ -7,8 +7,8 @@
 
 #include <unistd.h>
 #include <netinet/in.h>
-#include <bits/socket.h>
-
+//#include <bits/socket.h>
+#include <sys/socket.h>
 // 专用 本地域协议族使用 sockaddr_un
 #include <sys/un.h>
 
@@ -158,7 +158,7 @@
  */
 
 /*
- *  8. 通用读写
+ *  8. 通用读写(1)
  *      #include<sys/socket.h>
  *      ssize_t sendmsg(int sockfd,struct msghdr*msg,int flags);
  *      flags:  MSG_CONFIRM     持续监听对方的回应 知道得到答复.用于SOCK_DGRAM/SOCK_RAW
@@ -190,6 +190,56 @@
  *           };
  *
  */
+
+/*
+ *  8. 通用读写（2）
+ *  #include<sys/uio.h>
+ *  ssize_t readv(int fd,const struct iovec*vector,int count);  //  分散读
+ *  ssize_t writev(int fd,const struct iovec*vector,int count); //  集中写
+ *  param:
+ *      vector  可以以结构体数组的方式分块存储
+ *      count   块数
+ *
+ */
+
+/*
+ *  8. 零拷贝  (1)
+ *  #include<sys/sendfile.h>
+ *  ssize_t sendfile(int out_fd,int in_fd,off_t*offset,size_t count);
+ *  param:
+ *      out_fd  准备写入的fd (必须是socket)
+ *      in_fd   读出内容的fd (必须是支持mmap函数的文件描述符【指向真实文件】) 非socket pipe
+ *      offset  偏移位置
+ *      count   传递的长度
+ */
+
+
+/*
+ *  8. 零拷贝  (2)     至少有一个管道文件描述符
+ *  #include<fcntl.h>
+ *  ssize_t splice(int fd_in,loff_t*off_in,int fd_out,loff_t*off_out,size_t len,unsigned int flags);
+ *  param:
+ *      fd_in   待输入数据的fd    (1)pipe ==> off_in=NULL (2)socket ==> offset
+ *      fd_out  待输出数据的fd 同上
+ *      len     移动数据的长度
+ *      flags   控制移动方式   SPLICE_F_MOVE      kernel 2.6.21 无效
+ *                           SPLICE_F_NOBLOCK   非阻塞操作 但是受文件描述符阻塞影响
+ *                           SPLICE_F_MORE      后续的splice调用将读取更多的数据
+ *                           SPLICE_F_GIFT      无效
+ *
+ *      return： success 返回移动的字节数    fail -1
+ *
+ *          (3)
+ *  #include<fcntl.h>
+ *  ssize_t tee(int fd_in,int fd_out,size_t len,unsigned int flags);
+ *  param:
+ *      fd_in fd_out 都必须为管道
+ *
+ *      return： 成功返回拷贝数量    失败返回-1
+ *
+ */
+
+
 
 /*
  *  9. 外带标记
@@ -276,10 +326,37 @@
  *
  */
 
+/*
+ *  13. 共享内存
+ *  作用：进程间通信或将文件映射到其中
+ *  #include<sys/mman.h>
+ *  void*mmap(void*start,size_t length,int prot,int flags,int fd,off_t offset);
+ *  int munmap(void*start,size_t length);
+ *
+ *  param：
+ *      start   特定地址作为共享内存起始地址  NULL自动分配
+ *      length  内存段长度
+ *      prot    访问权限：
+ *              PROT_READ
+ *              PROT_WRITE
+ *              PROT_EXEC
+ *              PROT_NONE
+ *      flags   控制内存段内容被修改后程序的行为
+ *              MAP_SHARED      进程间共享
+ *              MAP_PRIVATE     进程私有，对该段内存修改不会反映到被映射的文件中
+ *              MAP_ANONYMOUS   非文件映射产生 内容初始化为0 mmap中【fd】【offset】被忽略
+ *              MAP_FIXED       内存段必须位于start参数指定地址处 start为内存页【4096】整数倍
+ *              MAP_HUGETLB     按照大内存页面来分配空间    /proc/mcminfo 中查看
+ *
+ *  return：
+ *      mmap    成功：指向目标内存区域的指针  失败：返回MAP_FAILED ((void*)-1)
+ *      munmap  成功：0                   失败：-1
+ */
+
 class NetBase {
 public:
     int redirect_stdout(int be_fd);
-
+    int redirect_fd(int old_fd, int new_fd);
 
 
 };

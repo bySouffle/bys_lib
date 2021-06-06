@@ -3,11 +3,9 @@
 //
 
 #ifndef BYS_LIB_PIPEOPT_H
-#define BYS_LIB_PIPEOPT_H
 
-#include <unistd.h>
-#include<sys/types.h>
 #include<sys/socket.h>
+#include <unistd.h>
 
 enum DefaultSize{
     kDefaultPipeSize = 65536,       //  kernel 2.6.11 default

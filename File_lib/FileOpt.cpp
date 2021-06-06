@@ -127,3 +127,14 @@ int FileOpt::judge_dir_exist_and_create(const char *file_url) {
 #endif
     return 0;
 }
+
+//! 将文件描述符设为非阻塞，返回旧的状态标志
+//! \param fd
+//! \return old_fd_option
+int FileOpt::set_fd_nonblocking(int fd) {
+    int old_fd_option = fcntl(fd, F_GETFL);
+    int new_fd_opntion = old_fd_option | O_NONBLOCK;
+    fcntl(fd, F_SETFL, new_fd_opntion);
+
+    return old_fd_option;
+}
