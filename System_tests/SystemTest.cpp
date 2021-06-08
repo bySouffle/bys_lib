@@ -40,3 +40,38 @@ TEST_F(SystemTest, test_setid) {     //  将uid root切换为普通usr
     int ret_val = systemopt->switch_process_to_user(503, 503);
     printf("ret_val = [%d]\n", ret_val);
 }
+
+TEST_F(SystemTest, test_chroot_chdir){
+    char current_dir[1024] = {};
+    char new_dir[1024] = {};
+
+    getcwd(current_dir,1024);
+    printf("current:[%s]\n",current_dir);
+
+    strcat(current_dir,"/test");
+    memcpy(new_dir,current_dir,1024);
+
+    mkdir(current_dir,0775);
+    chdir(current_dir);
+
+    getcwd(current_dir,1024);
+    printf("change current:[%s]\n",current_dir);
+
+    chdir(new_dir);
+    chroot(new_dir);
+
+    chdir("./test");
+    getcwd(current_dir, 1024);
+    printf(" / change current:[%s]\n",current_dir);
+
+
+    chdir("./");
+    getcwd(current_dir, 1024);
+    printf(" / change current:[%s]\n",current_dir);
+
+}
+
+TEST_F(SystemTest, test_daemonize) {    //  test daemon
+    int ret_val = systemopt->daemonize();
+    EXPECT_EQ(ret_val, 1);
+}

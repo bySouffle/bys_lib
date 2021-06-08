@@ -44,3 +44,35 @@ int SystemOpt::switch_process_to_user(uid_t usr_id, gid_t gp_id) {
 
     return kOK;
 }
+
+bool SystemOpt::daemonize() {
+    //  1. 创建子进程关闭父进程
+    pid_t pid = fork();
+    if (pid < 0) {
+        return false;
+    } else if (pid > 0) {
+        exit(0);
+    }
+    //  2. 设置文件掩码, 系统调用时权限为0777
+    umask(0);
+    //  3. 创建新会话,设置本进程为进程组leader
+    pid_t sid = setsid();
+    if (sid < 0) {
+        return false;
+    }
+    //  4. 切换工作目录
+    if ((chdir("/")) < 0) {
+        return false;
+    }
+    //  5. 关闭标准输出
+    close(STDIN_FILENO);
+    close(STDOUT_FILENO);
+    close(STDERR_FILENO);
+    //  ... 其他已经打开的文件描述符
+
+    //  6. 将标准输出输入error重定向到 /dev/null
+    open("/dev/null", O_RDONLY);
+    open("/dev/null", O_RDWR);
+    open("/dev/null", O_RDWR);
+    return true;
+}
