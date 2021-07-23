@@ -12,6 +12,8 @@
 #include "NetBase.h"
 #include "TcpOpt.h"
 #include "UdpOpt.h"
+#include "sys/epoll.h"
+#include "stdio.h"
 
 
 class PipeTest : public ::testing::Test {
@@ -348,4 +350,161 @@ TEST_F(NetBaseTest, Retroreflectserver) {       // mac test fail, have not splic
             }
         }
     }
+}
+
+/*
+ *  1. ET模式下在缓存区不取出
+ *  多次写未触发
+ *
+ *  zzzzz!
+ *
+ *
+ *
+ */
+TEST(epoll, ET){
+    int pip[2] = {};
+    pipe(pip);
+    NetBase base;
+    base.set_socket_nonblocking(pip[0]);
+    if (fork()>0){
+        //  1.  epoll_FD wait_FD
+        int epfd = 0;
+        int nfds = 0;
+        //  2.  struct epoll event
+        struct epoll_event ev = {};         //  register event struct
+        struct epoll_event events[5] = {};  //  deal with event struct
+        //  3.  create listening fd
+        epfd = epoll_create(1);
+        //  4.  set listening param
+        ev.data.fd = pip[0];            //  listening fd
+        ev.events = EPOLLIN | EPOLLET;  //  listening mode  ET/LT
+//        ev.events = EPOLLIN ;  //  listening mode  ET/LT
+
+        /*
+         * 5.  register epoll event
+         *  (1) epfd
+         *  (2) ctl_option
+         *  (3) be listening fd
+         *  (4) struct event
+         */
+        epoll_ctl(epfd, EPOLL_CTL_ADD, pip[0], &ev);
+        for(;;){
+            //  6.  cyclic
+            //  (1) epfd
+            //  (2) events
+            //  (3) max number
+            //  (4) timeout -1
+            nfds = epoll_wait(epfd, events, 5, -1);
+            for (int i = 0; i < nfds; ++i) {
+                if (events[i].data.fd == pip[0] ){
+                    char r[8] = {};
+//                    read(pip[0], r,8);
+                    printf("zzzzz!\n");
+                }
+            }
+        }
+    } else{
+        for (int i = 0; i < 10; ++i) {
+            char w[8] = {};
+            sprintf(w,"%d",i);
+            write(pip[1],w,8);
+        }
+//        write(pip[1],"epoll!\n",8);
+    }
+}
+
+
+
+
+void ip_calc_ipchecksum_2(void *pack_info){
+    int8_t* m_pack_info = (int8_t*)pack_info  ;
+    m_pack_info[24] = 0;
+    m_pack_info[25] = 0;
+
+    m_pack_info = &m_pack_info[13];
+    printf("m_pack_info: %x\r\n", *m_pack_info++);
+    int index = 0;
+    int ip_index = 0;
+
+    int32_t calc_sum = 0;
+    int16_t ip_head[10] = {};
+    int32_t cksum = 0;
+
+    while (index != 20)
+    {
+        /* code */
+        ip_head[ip_index] = ( ip_head[ip_index] |( m_pack_info[index] & 0xFF) ) << 8;
+        printf("m_pack_info[%d] = %x\r\n", index,  m_pack_info[index] );
+
+        ip_head[ip_index] = ( ip_head[ip_index] | (m_pack_info[index+1] & 0xFF) );
+        printf("m_pack_info[%d] = %x\r\n", index+1,  m_pack_info[index+1] );
+
+        printf("ip_head[%d] = %x\r\n",ip_index,  ip_head[ip_index] );
+
+        calc_sum += (ip_head[ip_index] & 0xffff );
+
+
+        printf("zzzzzzzzzzz%d %x %x\r\n", index, ip_head[ip_index], calc_sum);
+        index += 2;
+        ip_index += 1;
+    }
+    if(index == 20){
+        calc_sum=(calc_sum>>16)+(calc_sum&0xffff);  //把高位的进位，加到低八位，其实是32位加法
+        calc_sum+=(calc_sum>>16);  //add carry
+        // calc_sum = 0x1e21;
+        calc_sum = 0xd967;
+        cksum = ( ((0xF-(calc_sum)&0xF000) >> 12) << 12 |
+                  ((0xF-(calc_sum)&0x0F00) >> 8 ) << 8 ) ;
+
+        cksum = cksum |  ((0xF-(calc_sum)&0x00F0) >> 4 ) << 4  |
+                (0xF-(calc_sum)&0x000F) ;
+        /*
+        cksum = ( ((0xF-(calc_sum)&0xF000) >> 12) << 12 |
+                  ((0xF-(calc_sum)&0x0F00) >> 8 ) << 8  |
+                  ((0xF-(calc_sum)&0x000F) >> 4 ) << 4  |
+                  (0xF-(calc_sum)&0x000F) );
+        */
+        printf("%x %x %x %x\r\n",   ((0x000F-((calc_sum)&0xF000) >> 12) ) ,
+               ((0x000F-((calc_sum)&0x0F00) >> 8) ),
+               ((0x000F-((calc_sum)&0x00F0) >> 4) ),
+               (0x000F-(calc_sum)&0x000F));
+        // cksum=~calc_sum;   //取反\
+
+        printf("1111111ck_sum = %x\r\n", calc_sum);
+        printf("2222222ck_sum = %x\r\n", cksum);
+    }
+
+
+}
+
+TEST(ip_calc_ipchecksum_2, CHECK){
+    uint8_t iphead[] = {
+            0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+            0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+            0xff, 0xff,
+
+            //  Type
+            0x45, 0x00,
+            //  Length
+            0x00, 0x25,
+            //  Identification
+            0xd4, 0xc4,
+            //  flag offset
+            0x00, 0x00,
+            //  TTL Protocol
+            0x80, 0x11,
+            //  CheckSum    !!!!!
+            0x11, 0x11,
+            //  src ip
+            0xc0, 0xa8, 0x01, 0x6f,
+            //  dst ip
+            0xc0, 0xa8, 0x01, 0x65,
+
+            //  padding
+            0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+
+    };
+
+    ip_calc_ipchecksum_2(iphead);
+
 }

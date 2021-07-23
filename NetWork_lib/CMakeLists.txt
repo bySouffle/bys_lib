@@ -6,13 +6,13 @@ set(HEADER_FILES
         UdpOpt.h
         NetBase.h
         PipeOpt.h
-        )
+        dsp_socket.h)
 set(SOURCE_FILES
         TcpOpt.cpp
         UdpOpt.cpp
         NetBase.cpp
         PipeOpt.cpp
-        )
+        dsp_socket.cpp)
 
 # add lib
 add_library(NetWork_lib STATIC ${SOURCE_FILES} ${HEADER_FILES})

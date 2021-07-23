@@ -23,3 +23,10 @@ int NetBase::redirect_fd(int old_fd, int new_fd) {
     return ret_val;
 }
 
+int NetBase::set_socket_nonblocking(int fd) {
+    int old_fd_option = fcntl(fd, F_GETFL);
+    fcntl(fd, F_SETFL, old_fd_option | O_NONBLOCK);
+
+    return old_fd_option;
+}
+

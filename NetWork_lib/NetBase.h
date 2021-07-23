@@ -5,18 +5,6 @@
 #ifndef BYS_LIB_NETBASE_H
 #define BYS_LIB_NETBASE_H
 
-#include <unistd.h>
-#include <netinet/in.h>
-//#include <bits/socket.h>
-#include <sys/socket.h>
-// 专用 本地域协议族使用 sockaddr_un
-#include <sys/un.h>
-
-// 专用 IPV4 IPV6 netinet/in.h   sockaddr_in sockaddr_in6
-
-//  IP地址转换
-#include <arpa/inet.h>
-
 /* ====  字节序转主机序  ======
  * 1. 网络字节序转主机字节序
  *      htonl   htons
@@ -353,12 +341,25 @@
  *      munmap  成功：0                   失败：-1
  */
 
+#include <unistd.h>
+#include <netinet/in.h>
+//#include <bits/socket.h>
+#include <sys/socket.h>
+// 专用 本地域协议族使用 sockaddr_un
+#include <sys/un.h>
+
+// 专用 IPV4 IPV6 netinet/in.h   sockaddr_in sockaddr_in6
+
+//  IP地址转换
+#include <arpa/inet.h>
+#include <fcntl.h>
+#include <sys/epoll.h>
+
 class NetBase {
 public:
     int redirect_stdout(int be_fd);
     int redirect_fd(int old_fd, int new_fd);
-
-
+    int set_socket_nonblocking(int fd);
 };
 
 
