@@ -12,6 +12,7 @@
 #include "NetBase.h"
 #include "TcpOpt.h"
 #include "UdpOpt.h"
+#include "dsp_socket.h"
 #include "sys/epoll.h"
 #include "stdio.h"
 
@@ -70,6 +71,20 @@ protected:
 
     UdpOpt *udpopt;
 
+};
+
+//  DSP socket test
+class DspSocketTest : public ::testing::Test {
+protected:
+    virtual void SetUp() {
+        dspsocket = new DspSocket();
+    }
+
+    virtual void TearDown() {
+        delete dspsocket;
+    }
+
+    DspSocket *dspsocket;
 };
 
 
@@ -506,5 +521,45 @@ TEST(ip_calc_ipchecksum_2, CHECK){
     };
 
     ip_calc_ipchecksum_2(iphead);
+
+}
+
+
+
+
+TEST(DspSocket, ip_checksum){
+    DspSocket *dspsocket = new DspSocket;
+    uint8_t srcmac[6] = {0x2c,0xf0,0x5d,0x16,0xff,0x57};
+    uint8_t dstmac[6] = {0x2c,0x16,0xdb,0xa1,0x94,0xf1};
+
+    dspsocket->init_mac(&dspsocket->mac_info_, srcmac,dstmac);
+    dspsocket->init_mac_type(&dspsocket->mac_info_, 0x08);
+
+    dspsocket->init_ip_headinfo(&dspsocket->ip_info_, 0x45);
+    dspsocket->init_ip_dsf(&dspsocket->ip_info_, 0x00);
+    //  TODO TOTAL LENGTH
+    dspsocket->set_ip_length(&dspsocket->ip_info_, 0x25);
+
+    dspsocket->only_ide(&dspsocket->ip_info_, 0xd4c5);
+    dspsocket->init_flag_offset(&dspsocket->ip_info_, 0x00);
+    dspsocket->init_ttl(&dspsocket->ip_info_, 0x80);
+    dspsocket->init_protocol(&dspsocket->ip_info_, 0x11);
+    uint8_t srcip[4] = {0xc0,0xa8,0x01,0x6f};
+    uint8_t dspip[4] = {0xc0,0xa8,0x01,0x65};
+    dspsocket->init_ip_addr(&dspsocket->ip_info_, srcip, dspip);
+    dspsocket->init_ip_addr(&dspsocket->ip_info_, srcip, dspip);
+
+    dspsocket->init_src_port(&dspsocket->udp_info_, 0xd431);
+    dspsocket->init_dst_port(&dspsocket->udp_info_, 0x3039);
+    dspsocket->set_udp_length(&dspsocket->udp_info_, 0x11);
+    memcpy(&dspsocket->udp_packet_.mac_info,&dspsocket->mac_info_,sizeof (dspsocket->mac_info_));
+    memcpy(&dspsocket->udp_packet_.ip_info,&dspsocket->ip_info_,sizeof (dspsocket->ip_info_));
+    memcpy(&dspsocket->udp_packet_.udp_info,&dspsocket->udp_info_,sizeof (dspsocket->udp_info_));
+
+    uint8_t m_data[9] = {0x31,0x32,0x33,0x31,0x32,0x33,0x31,0x32,0x33};
+    dspsocket->dsp_adddata(&dspsocket->udp_packet_, m_data, 9);
+
+    dspsocket->set_ip_checksum(&dspsocket->udp_packet_);
+    dspsocket->set_udp_checksum(&dspsocket->udp_packet_);
 
 }
