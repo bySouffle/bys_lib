@@ -7,6 +7,15 @@
 
 #include <stdint.h>
 #include <string.h>
+
+#define MAC_ERROR   (-10)
+#define IP_ERROR    (-20)
+#define UDP_ERROR   (-30)
+
+#define MACIP_Type  0x0800
+#define IP_V_LEN    0x45
+
+
 #pragma pack(4)
 
 typedef struct MAC_INFO
@@ -40,6 +49,8 @@ typedef struct UDP_INFO
     uint8_t udp_checksum[2];
 }UDP_INFO_t;
 
+
+
 typedef struct UDP_PACKET
 {
     /* data */
@@ -56,18 +67,35 @@ class DspSocket {
 public:
     DspSocket();
     ~DspSocket();
+
+    //  Interface
+    /*
+      //    初始化MAC信息
+      int init_mac(MAC_INFO_t *mac_info, uint8_t src_mac[6], uint8_t dst_mac[6]);
+
+      //   初始化本地IP port
+      int init_src_ip_port()
+     *
+     *
+     * */
+    //  初始化本地 ip port
+    int init_src_ip_port(UDP_PACKET_t *udp_packet, uint8_t src_ip[4], uint16_t port);
+
+
 //  计算IP校验
     uint16_t calc_ip_checksum(void * udp_packge);
 //  计算UDP校验
     uint16_t calc_udp_checksum(void * udp_packge, int length);
+//  获取唯一ide
+    uint16_t get_only_ide(uint16_t ide);
 
 
 //  ============================    mac header  ========================================
 //  初始化MAC信息
       int init_mac(MAC_INFO_t *mac_info, uint8_t src_mac[6], uint8_t dst_mac[6]);
       int init_mac( uint8_t src_mac[6], uint8_t dst_mac[6]);
-    //  初始化协议类型 only ipv4
-      int init_mac_type(MAC_INFO_t *mac_info, uint8_t type);
+    //  初始化协议类型 only ipv4 0x0800
+      int init_mac_type(MAC_INFO_t *mac_info, uint16_t type);
 
 
 //  ============================    IP header   ========================================
@@ -105,14 +133,18 @@ public:
 //    inline int dsp_socket( );
       int dsp_adddata(UDP_PACKET_t* udp_pack, const void *data, uint16_t len);
 
-      int dsp_sendto(const void *data, uint16_t len);
+      int dsp_sendto(UDP_PACKET_t* udp_pack, uint8_t *dst_ip, uint16_t port,
+                     const void *data, uint16_t len);
+//  ============================    make of pack    =====================================
+      int get_pack_len(UDP_PACKET_t * udp_pack);
+      int dsp_make_package(UDP_PACKET_t * udp_pack, uint8_t **udp_package);
 
 //private:
-    MAC_INFO_t mac_info_;
-    IP_INFO_t  ip_info_;
-    UDP_INFO_t  udp_info_;
+//    MAC_INFO_t mac_info_;
+//    IP_INFO_t  ip_info_;
+//    UDP_INFO_t  udp_info_;
     UDP_PACKET_t udp_packet_;
-
+    uint16_t cnt_ = 0;
 };
 
 

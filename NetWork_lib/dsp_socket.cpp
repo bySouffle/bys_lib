@@ -134,27 +134,34 @@ uint16_t DspSocket::calc_udp_checksum(void *udp_packge, int length) {
 
 int DspSocket::init_mac(MAC_INFO_t *mac_info, uint8_t *src_mac, uint8_t *dst_mac) {
     memset(mac_info, 0, sizeof(MAC_INFO_t));
-    memcpy(&mac_info->src_mac, src_mac, sizeof (mac_info_.src_mac));
-    memcpy(&mac_info->dst_mac, dst_mac, sizeof (mac_info_.dst_mac));
+    memcpy(&mac_info->src_mac, src_mac, sizeof (mac_info->src_mac));
+    memcpy(&mac_info->dst_mac, dst_mac, sizeof (mac_info->dst_mac));
     return 0;
 }
 
 int DspSocket::init_mac(uint8_t *src_mac, uint8_t *dst_mac) {
-    memset(&mac_info_, 0, sizeof(MAC_INFO_t));
-    memcpy(&mac_info_.src_mac, src_mac, sizeof (mac_info_.src_mac));
-    memcpy(&mac_info_.dst_mac, dst_mac, sizeof (mac_info_.dst_mac));
+    memset(&udp_packet_.mac_info, 0, sizeof(MAC_INFO_t));
+    memcpy(&udp_packet_.mac_info.src_mac, src_mac, sizeof (udp_packet_.mac_info.src_mac));
+    memcpy(&udp_packet_.mac_info.dst_mac, dst_mac, sizeof (udp_packet_.mac_info.dst_mac));
     return 0;
 }
 
 int DspSocket::init_ip_addr(IP_INFO_t *ip_info, uint8_t *src_ip, uint8_t *dst_ip) {
 //    memset(ip_info, 0, sizeof(IP_INFO_t));
-    memcpy(ip_info->src_ip, src_ip, sizeof (ip_info->src_ip));
-    memcpy(ip_info->dst_ip, dst_ip, sizeof (ip_info->dst_ip));
+    if(ip_info == nullptr){
+        return -1;
+    }
+    if(src_ip != nullptr){
+        memcpy(ip_info->src_ip, src_ip, sizeof (ip_info->src_ip));
+    }
+    if(dst_ip != nullptr){
+        memcpy(ip_info->dst_ip, dst_ip, sizeof (ip_info->dst_ip));
+    }
     return 0;
 }
 
 int DspSocket::init_ip_addr(IP_INFO_t *ip_info, uint32_t src_ip, uint32_t dst_ip) {
-    memset(&ip_info_, 0, sizeof(IP_INFO_t));
+//    memset(&ip_info_, 0, sizeof(IP_INFO_t));
     uint8_t index;
     for ( index = 0; index < 4; ++index) {
         ip_info->src_ip[index] = src_ip >> (12-4*index) & 0xFF;
@@ -187,22 +194,35 @@ int DspSocket::init_port(UDP_INFO_t * udp_info, uint16_t src_port, uint16_t dst_
     return 0;
 }
 
-int DspSocket::init_mac_type(MAC_INFO_t *mac_info, uint8_t type) {
+int DspSocket::init_mac_type(MAC_INFO_t *mac_info, uint16_t type) {
     //  TODO    if use others
+    if(mac_info == nullptr){
+        return MAC_ERROR - 2;
+    }
+    mac_info->ip_version[0] = (type & 0xFF00) >> 8;
+    mac_info->ip_version[1] = type & 0xFF ;
+    /*
     mac_info->ip_version[0] = 0x08;
     mac_info->ip_version[1] = 0x00;
+    */
     return 0;
 }
 
 int DspSocket::init_ip_headinfo(IP_INFO_t *ip_info, uint8_t version_length) {
     //  TODO if use others
-    ip_info->IP_version_len= 0x45;
+    if(ip_info == nullptr){
+        return IP_ERROR -1;
+    }
+    ip_info->IP_version_len = version_length;
 
     return 0;
 }
 
 int DspSocket::init_ip_dsf(IP_INFO_t *ip_info, uint8_t DSF) {
-    ip_info->DSF = 0x00;
+    if(ip_info == nullptr){
+        return IP_ERROR -2;
+    }
+    ip_info->DSF = DSF;
     return 0;
 }
 
@@ -220,17 +240,26 @@ int DspSocket::only_ide(IP_INFO_t *ip_info, uint16_t ide) {
 
 int DspSocket::init_flag_offset(IP_INFO_t *ip_info, uint16_t param) {
     //  TODO if set others
-    ip_info->flag_offset[0] = 0x00;
-    ip_info->flag_offset[1] = 0x00;
+    if(ip_info == nullptr){
+        return IP_ERROR -6;
+    }
+    ip_info->flag_offset[0] = (param&0xff00) >> 8;
+    ip_info->flag_offset[1] = (param&0xff);
     return 0;
 }
 
 int DspSocket::init_ttl(IP_INFO_t *ip_info, uint8_t TTL) {
+    if(ip_info == nullptr){
+        return IP_ERROR - 7;
+    }
     ip_info->TTL_protocol[0] = TTL;
     return 0;
 }
 
 int DspSocket::init_protocol(IP_INFO_t *ip_info, uint8_t PTL) {
+    if (ip_info == nullptr){
+        return IP_ERROR - 8;
+    }
     ip_info->TTL_protocol[1] = PTL;
     return 0;
 }
@@ -262,17 +291,23 @@ uint16_t DspSocket::set_udp_length(UDP_INFO_t *udp_info, uint16_t len) {
 }
 
 int DspSocket::dsp_adddata(UDP_PACKET_t* udp_pack, const void *data, uint16_t len) {
-    uint8_t *udp_data = (uint8_t *)malloc(len*sizeof (uint8_t));
+//    uint8_t *udp_data = (uint8_t *)malloc(len*sizeof (uint8_t));
     //  TODO
+    if(udp_pack->data != nullptr){
+        free(udp_pack->data);
+        udp_pack->data = nullptr;
+    }
     udp_pack->data = (uint8_t *)malloc(len*sizeof (uint8_t));
     memcpy(udp_pack->data, data, len);
     uint16_t udp_len = len+8;   //  udp head length
     set_udp_length(&udp_pack->udp_info,udp_len);
     udp_len += 20;              //  total length
     set_ip_length(&udp_pack->ip_info,udp_len);
+    //  设置ide
+    uint16_t ide = get_only_ide(cnt_);
+    only_ide(&udp_pack->ip_info, ide);
 
     //  TODO calc checksum
-
     uint16_t ip_sum = calc_ip_checksum(udp_pack);
     printf("ip_sum: %d \r\n", ip_sum);
     uint16_t udp_sum = calc_udp_checksum(udp_pack,udp_len-28);
@@ -282,9 +317,9 @@ int DspSocket::dsp_adddata(UDP_PACKET_t* udp_pack, const void *data, uint16_t le
 }
 
 DspSocket::DspSocket() {
-     mac_info_ = {};
-      ip_info_ = {};
-      udp_info_ = {};
+//     mac_info_ = {};
+//      ip_info_ = {};
+//      udp_info_ = {};
      udp_packet_ = {};
 
 }
@@ -309,6 +344,76 @@ int DspSocket::set_udp_checksum(UDP_PACKET_t *udp_pack) {
 
     return 0;
 }
+
+int DspSocket::get_pack_len(UDP_PACKET_t *udp_pack) {
+    uint16_t pack_length = (udp_pack->ip_info.total_length[0]<< 8) |
+                           (udp_pack->ip_info.total_length[1]);
+    pack_length += 14;
+    return pack_length;
+}
+
+int DspSocket::dsp_make_package(UDP_PACKET_t *udp_pack, uint8_t **udp_package) {
+    if(*udp_package != nullptr){
+        return -1;
+    }
+//    int k_udp_head_length = 42;
+
+    int pack_length = get_pack_len(udp_pack);
+    *udp_package = (uint8_t*)malloc( pack_length*sizeof (uint8_t));
+    memset(*udp_package,0,pack_length*sizeof (uint8_t));
+    int k_udp_head_length = 42;
+    memcpy(*udp_package, udp_pack, k_udp_head_length);
+    //  test
+    uint8_t strstr[12] = {};
+    memcpy(strstr, udp_pack->data,pack_length-42);
+    memcpy((*udp_package)+42,udp_pack->data,pack_length-42);
+    //  TODO send data
+    for(int i = 0; i<pack_length ; ++i){
+        printf("%x ",(*udp_package)[i]);
+        if(i % 16 ==0 ){
+            printf("\r\n");
+        }
+    }
+    //  free
+    free(*udp_package);
+    *udp_package = nullptr;
+    return 0;
+}
+
+int DspSocket::init_src_ip_port(UDP_PACKET_t *udp_packet, uint8_t *src_ip, uint16_t port) {
+    uint8_t ret = 0;
+
+    //  初始化默认IP头
+    init_mac_type(&udp_packet->mac_info, 0x0800);
+    init_ip_headinfo(&udp_packet->ip_info, 0x45);
+    init_ip_dsf(&udp_packet->ip_info, 0x00);
+    //  total_len ide 在添加数据的时候设置
+//    set_ip_length(&udp_packet->ip_info, 0x0000);
+//    only_ide(&udp_packet->ip_info, 0x0000);
+    init_flag_offset(&udp_packet->ip_info, 0x0000);
+    init_ttl(&udp_packet->ip_info, 0x80);
+    init_protocol(&udp_packet->ip_info, 0x11);
+//    set_ip_checksum(udp_packet);
+    ret = init_ip_addr(&udp_packet->ip_info, src_ip, nullptr);
+    ret = init_src_port(&udp_packet->udp_info, port);
+    return ret;
+}
+
+uint16_t DspSocket::get_only_ide(uint16_t ide) {
+    ide += 1;
+    return ide;
+}
+
+int DspSocket::dsp_sendto(UDP_PACKET_t* udp_pack, uint8_t *dst_ip, uint16_t port,
+                          const void *data, uint16_t len) {
+    init_ip_addr(&udp_pack->ip_info, nullptr, dst_ip);
+    init_dst_port(&udp_pack->udp_info,port);
+    dsp_adddata(udp_pack,data,len);
+    return 0;
+}
+
+
+
 
 
 
