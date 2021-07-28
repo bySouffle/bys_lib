@@ -297,6 +297,9 @@ int DspSocket::dsp_adddata(UDP_PACKET_t* udp_pack, const void *data, uint16_t le
         free(udp_pack->data);
         udp_pack->data = nullptr;
     }
+    if(data == nullptr){
+        return UDP_ERROR;
+    }
     udp_pack->data = (uint8_t *)malloc(len*sizeof (uint8_t));
     memcpy(udp_pack->data, data, len);
     uint16_t udp_len = len+8;   //  udp head length
@@ -310,9 +313,10 @@ int DspSocket::dsp_adddata(UDP_PACKET_t* udp_pack, const void *data, uint16_t le
     //  TODO calc checksum
     uint16_t ip_sum = calc_ip_checksum(udp_pack);
     printf("ip_sum: %d \r\n", ip_sum);
+    set_ip_checksum(udp_pack);
     uint16_t udp_sum = calc_udp_checksum(udp_pack,udp_len-28);
     printf("udp_sum: %d \r\n", udp_sum);
-
+    set_udp_checksum(udp_pack);
     return 0;
 }
 
@@ -329,6 +333,13 @@ DspSocket::~DspSocket() {
 }
 
 int DspSocket::set_ip_checksum(UDP_PACKET_t* udp_pack) {
+    if(udp_pack == nullptr){
+        return IP_ERROR - 9;
+    }
+    //  clear value
+    udp_pack->ip_info.ip_checksum[0] & 0x00;
+    udp_pack->ip_info.ip_checksum[1] & 0x00;
+
     uint16_t ip_checksum = calc_ip_checksum(udp_pack);
     udp_pack->ip_info.ip_checksum[0] = (ip_checksum >> 8)&0xff;
     udp_pack->ip_info.ip_checksum[1] = (ip_checksum     )&0xff;
@@ -336,6 +347,13 @@ int DspSocket::set_ip_checksum(UDP_PACKET_t* udp_pack) {
 }
 
 int DspSocket::set_udp_checksum(UDP_PACKET_t *udp_pack) {
+    if(udp_pack == nullptr){
+        return UDP_ERROR - 4;
+    }
+    //  clear value
+    udp_pack->udp_info.udp_checksum[0] & 0x00;
+    udp_pack->udp_info.udp_checksum[1] & 0x00;
+
     uint16_t len = (udp_pack->udp_info.udp_length[0]<<8) |
                     udp_pack->udp_info.udp_length[1];
     uint16_t udp_checksum = calc_udp_checksum(udp_pack, len);
@@ -364,20 +382,29 @@ int DspSocket::dsp_make_package(UDP_PACKET_t *udp_pack, uint8_t **udp_package) {
     int k_udp_head_length = 42;
     memcpy(*udp_package, udp_pack, k_udp_head_length);
     //  test
+    /*
     uint8_t strstr[12] = {};
     memcpy(strstr, udp_pack->data,pack_length-42);
-    memcpy((*udp_package)+42,udp_pack->data,pack_length-42);
+    */
+     memcpy((*udp_package)+42,udp_pack->data,pack_length-42);
     //  TODO send data
+    printf("\r\n");
     for(int i = 0; i<pack_length ; ++i){
-        printf("%x ",(*udp_package)[i]);
-        if(i % 16 ==0 ){
+        if(  (i % 0xf == 0) && (i!=0) ){
             printf("\r\n");
         }
+        printf("0x%2x ",(*udp_package)[i]);
+
     }
     //  free
     free(*udp_package);
     *udp_package = nullptr;
     return 0;
+}
+
+uint16_t DspSocket::get_only_ide(uint16_t ide) {
+    ide += 1;
+    return ide;
 }
 
 int DspSocket::init_src_ip_port(UDP_PACKET_t *udp_packet, uint8_t *src_ip, uint16_t port) {
@@ -399,18 +426,19 @@ int DspSocket::init_src_ip_port(UDP_PACKET_t *udp_packet, uint8_t *src_ip, uint1
     return ret;
 }
 
-uint16_t DspSocket::get_only_ide(uint16_t ide) {
-    ide += 1;
-    return ide;
-}
-
 int DspSocket::dsp_sendto(UDP_PACKET_t* udp_pack, uint8_t *dst_ip, uint16_t port,
                           const void *data, uint16_t len) {
     init_ip_addr(&udp_pack->ip_info, nullptr, dst_ip);
     init_dst_port(&udp_pack->udp_info,port);
     dsp_adddata(udp_pack,data,len);
+
+    uint8_t *complete_pack = nullptr;
+    dsp_make_package(udp_pack, &complete_pack);
+    //  TODO send
+    printf("");
     return 0;
 }
+
 
 
 

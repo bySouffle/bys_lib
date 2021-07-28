@@ -566,3 +566,22 @@ TEST(DspSocket, ip_checksum){
     dspsocket->dsp_make_package(&dspsocket->udp_packet_, &send_data);
 }
 
+
+TEST(Dsp_socket_send, send_pack_test){
+    DspSocket *dspsocket = new DspSocket;
+    uint8_t srcmac[6] = {0x2c,0xf0,0x5d,0x16,0xff,0x57};
+    uint8_t dstmac[6] = {0x2c,0x16,0xdb,0xa1,0x94,0xf1};
+
+    uint8_t srcip[4] = {0xc0,0xa8,0x01,0x6f};
+    uint8_t dspip[4] = {0xc0,0xa8,0x01,0x65};
+
+    uint16_t srcport = 54321;
+    uint16_t dstport = 12345;
+    dspsocket->init_mac(&dspsocket->udp_packet_.mac_info,srcmac,dstmac);
+    dspsocket->init_src_ip_port(&dspsocket->udp_packet_, srcip, srcport);
+
+    uint8_t data_1[10] = {1,2,3,1,2,3,1,2,3};
+    dspsocket->dsp_sendto(&dspsocket->udp_packet_,dspip, dstport, data_1, 9);
+    uint8_t data_2[18] = {1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3};
+    dspsocket->dsp_sendto(&dspsocket->udp_packet_,dspip, dstport, data_2, 18);
+}
