@@ -445,7 +445,7 @@ int32_t dsp_sendto(uint8_t eMAC_Port, UDP_PACKET_t* udp_pack, uint8_t *dst_ip, u
 
 int32_t dsp_recvfrom(uint8_t *recv_data, Dsp_SockAddr_t *dst, uint8_t *recv_flag) {
     //  TODO recv data
-    if(recv_flag == 0){
+    if(*recv_flag == 0){
         return -1;
     }
 
