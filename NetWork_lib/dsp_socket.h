@@ -60,24 +60,25 @@ typedef struct UDP_PACKET
     uint8_t * data;
 }UDP_PACKET_t;
 
+typedef struct Dsp_SockAddr{
+    uint8_t Recv_Ip[4];
+    uint16_t Recv_port;
+}Dsp_SockAddr_t;
+
 #pragma pack()
 
 
+/*  Use-Method
+ *  1. 初始化源目    MAC        init_mac
+ *  2. 初始化源     IP Port     init_src_ip_port
+ *  3. 发送数据                 dsp_sendto
+ *  4. 接收数据                 dsp_recvfrom
+ * */
 class DspSocket {
 public:
     DspSocket();
     ~DspSocket();
 
-    //  Interface
-    /*
-      //    初始化MAC信息
-      int init_mac(MAC_INFO_t *mac_info, uint8_t src_mac[6], uint8_t dst_mac[6]);
-
-      //   初始化本地IP port
-      int init_src_ip_port()
-     *
-     *
-     * */
     //  初始化本地 ip port
     int init_src_ip_port(UDP_PACKET_t *udp_packet, uint8_t src_ip[4], uint16_t port);
 
@@ -86,7 +87,7 @@ public:
     uint16_t calc_ip_checksum(void * udp_packge);
 //  计算UDP校验
     uint16_t calc_udp_checksum(void * udp_packge, int length);
-//  获取唯一ide
+//  获取唯一ide标识
     uint16_t get_only_ide(uint16_t ide);
 
 
@@ -131,14 +132,16 @@ public:
 
 //  ============================    add data   ==========================================
 //    inline int dsp_socket( );
-      int dsp_adddata(UDP_PACKET_t* udp_pack, const void *data, uint16_t len);
+      int dsp_add_data(UDP_PACKET_t* udp_pack, const void *data, uint16_t len);
 
       int dsp_sendto(UDP_PACKET_t* udp_pack, uint8_t *dst_ip, uint16_t port,
                      const void *data, uint16_t len);
+      int dsp_recvfrom(uint8_t* recv_data, Dsp_SockAddr_t* dst_ip_port);
+
 //  ============================    make of pack    =====================================
       int get_pack_len(UDP_PACKET_t * udp_pack);
       int dsp_make_package(UDP_PACKET_t * udp_pack, uint8_t **udp_package);
-
+      int dsp_unpack_package(UDP_PACKET_t * udp_pack, const uint8_t* recv_data);
 //private:
 //    MAC_INFO_t mac_info_;
 //    IP_INFO_t  ip_info_;

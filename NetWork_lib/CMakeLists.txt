@@ -12,7 +12,7 @@ set(SOURCE_FILES
         UdpOpt.cpp
         NetBase.cpp
         PipeOpt.cpp
-        dsp_socket.cpp)
+        dsp_socket.cpp dsp_udpsocket.cpp dsp_udpsocket.h)
 
 # add lib
 add_library(NetWork_lib STATIC ${SOURCE_FILES} ${HEADER_FILES})

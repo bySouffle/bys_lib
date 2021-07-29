@@ -558,7 +558,7 @@ TEST(DspSocket, ip_checksum){
     memcpy(&dspsocket->udp_packet_.udp_info,&dspsocket->udp_packet_.udp_info,sizeof (dspsocket->udp_packet_.udp_info));
     */
     uint8_t m_data[9] = {0x31,0x32,0x33,0x31,0x32,0x33,0x31,0x32,0x33};
-    dspsocket->dsp_adddata(&dspsocket->udp_packet_, m_data, 9);
+    dspsocket->dsp_add_data(&dspsocket->udp_packet_, m_data, 9);
 
     dspsocket->set_ip_checksum(&dspsocket->udp_packet_);
     dspsocket->set_udp_checksum(&dspsocket->udp_packet_);
@@ -584,4 +584,15 @@ TEST(Dsp_socket_send, send_pack_test){
     dspsocket->dsp_sendto(&dspsocket->udp_packet_,dspip, dstport, data_1, 9);
     uint8_t data_2[18] = {1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3};
     dspsocket->dsp_sendto(&dspsocket->udp_packet_,dspip, dstport, data_2, 18);
+}
+
+TEST(Dsp_socket_recv, recv_pack_test){
+    DspSocket *dspsocket = new DspSocket;
+
+    uint8_t data[1024] = {};
+    Dsp_SockAddr_t addr = {};
+
+    dspsocket->dsp_recvfrom(data, &addr);
+
+
 }
