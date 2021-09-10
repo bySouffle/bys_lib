@@ -15,7 +15,7 @@
 #include "dsp_socket.h"
 #include "sys/epoll.h"
 #include "stdio.h"
-
+#include "EpollServer.h"
 
 class PipeTest : public ::testing::Test {
 protected:
@@ -595,4 +595,26 @@ TEST(Dsp_socket_recv, recv_pack_test){
     dspsocket->dsp_recvfrom(data, &addr);
 
 
+}
+
+
+//  epoll_test
+class EpollServerTest : public ::testing::Test {
+protected:
+    virtual void SetUp() {
+        epollServer = new EpollServer();
+    }
+
+    virtual void TearDown() {
+        delete epollServer;
+    }
+
+    EpollServer *epollServer;
+
+};
+
+TEST_F(EpollServerTest, udpserver){
+    epollServer->epoll_udp_server_init( udp_echo_callback, 10);
+    epollServer->epoll_server_start();
+    epollServer->epoll_server_delete();
 }

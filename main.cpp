@@ -11,8 +11,78 @@
 #include "fcntl.h"
 
 #include "NetBase.h"
+#include "EpollServer.h"
+#include <pthread.h>
+
+
+void *send_data(void *){
+//    int fd = socket(AF_INET,SOCK_DGRAM,0);
+
+//    if(ret_val < 0){
+//        printf("bind fail\r\n");
+//    }
+//    NetBase::set_socket_nonblocking(fd);
+
+    sockaddr_in server_addr ;
+    server_addr.sin_port = htons(50010);
+    server_addr.sin_addr.s_addr = inet_addr("192.168.179.208");
+//    addr.sin_addr.s_addr = inet_addr("127.0.0.1");
+
+    server_addr.sin_family = AF_INET;
+
+    char recv_buf[10] = {};
+    char send_buf[100] = "123123132123132132111111111111111111111111111111111111111111111123333333333113212313";
+    int send_len = 0;
+    int  recv_len = 0;
+    sleep(10);
+    while (1){
+        int fd = socket(AF_INET,SOCK_STREAM,0);
+        if(fd < 0){
+            print("FD Create fail\r\n");
+        }
+        sockaddr_in addr;
+        addr.sin_port = htons(50022);
+//    addr.sin_addr.s_addr = inet_addr("192.168.179.208");
+//    addr.sin_addr.s_addr = inet_addr("127.0.0.1");
+        addr.sin_addr.s_addr = INADDR_ANY;
+        addr.sin_family = AF_INET;
+        int ret_val = 0;
+
+        ret_val = bind(fd, (struct sockaddr*)&addr,sizeof (struct sockaddr));
+        sleep(5);
+        ret_val = connect(fd,(struct sockaddr*)&server_addr,sizeof (struct sockaddr));
+
+        print("connect ret %d %s\r\n", ret_val, strerror(errno));
+        if( ret_val >= 0){
+            sleep(1);
+            while (1)
+            {
+//                print("send error\r\n");
+                send_len = send(fd,send_buf,100,0);
+                print("send  %s\r\n", strerror(errno));
+
+                if(send_len <= 0 ){
+                    print("send error\r\n");
+                    break;
+                }
+
+                recv_len = recv(fd,recv_buf,10,0);
+                if(recv_len < 0){
+                    print("recv error\r\n");
+                    break;
+                }
+                print("Recvbuf %s\r\n",recv_buf);
+                close(fd);
+                break;
+            }
+        }
+//        sendto(fd,"123123",7,0,(struct sockaddr*)&addr,sizeof (struct sockaddr));
+//        sleep(1);
+    }
+}
 
 int main() {
+#if 0
     int pip[2] = {};
     pipe(pip);
     NetBase base;
@@ -70,4 +140,17 @@ int main() {
         }
         write(pip[1],"epoll!\n",8);
     }
+#endif
+    printf("ZZZZZZZZZZZ\n");
+    pthread_t pid;
+    pthread_create(&pid,NULL, send_data,NULL);
+
+
+    EpollServer *epollServer = new EpollServer;
+//    epollServer->epoll_udp_server_init( udp_echo_callback, 10);
+    epollServer->epoll_tcp_server_init(tcp_recv_echo_callback, 1000);
+    epollServer->epoll_server_start();
+    epollServer->epoll_server_delete();
+
+
 }

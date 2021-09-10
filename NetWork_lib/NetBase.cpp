@@ -23,9 +23,17 @@ int NetBase::redirect_fd(int old_fd, int new_fd) {
     return ret_val;
 }
 
+//! 设置fd为非阻塞状态
+//! \param fd
+//! \return [-1: 获取fd状态失败] [-2: 设置fd状态失败]
 int NetBase::set_socket_nonblocking(int fd) {
     int old_fd_option = fcntl(fd, F_GETFL);
-    fcntl(fd, F_SETFL, old_fd_option | O_NONBLOCK);
+    if(old_fd_option < 0){
+        return -1;
+    }
+    if( fcntl(fd, F_SETFL, old_fd_option | O_NONBLOCK) < 0 ){
+        return -2;
+    }
 
     return old_fd_option;
 }

@@ -359,7 +359,7 @@ class NetBase {
 public:
     int redirect_stdout(int be_fd);
     int redirect_fd(int old_fd, int new_fd);
-    int set_socket_nonblocking(int fd);
+    static int set_socket_nonblocking(int fd);
 };
 
 

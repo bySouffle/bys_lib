@@ -29,7 +29,7 @@ add_subdirectory(NetWork_lib)
 add_subdirectory(TypeConversion_lib)
 add_subdirectory(System_lib)
 
-target_link_libraries(bys_lib File_lib NetWork_lib TypeConversion_lib)
+target_link_libraries(bys_lib File_lib NetWork_lib TypeConversion_lib pthread)
 
 add_subdirectory(File_tests)
 add_subdirectory(NetWork_tests)
