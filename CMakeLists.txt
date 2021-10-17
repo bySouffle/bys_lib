@@ -1,4 +1,5 @@
-cmake_minimum_required(VERSION 3.19)
+#cmake_minimum_required(VERSION 3.19)
+cmake_minimum_required(VERSION 3.16)
 project(bys_lib)
 
 set(CMAKE_CXX_STANDARD 14)
@@ -35,3 +36,4 @@ add_subdirectory(File_tests)
 add_subdirectory(NetWork_tests)
 add_subdirectory(TypeConversion_tests)
 add_subdirectory(System_tests)
+add_subdirectory(Any_tests)

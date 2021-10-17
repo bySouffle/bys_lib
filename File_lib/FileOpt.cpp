@@ -12,7 +12,7 @@ std::string FileOpt::get_current_url() {
 //
         return nullptr;
     }
-    return std::__cxx11::string(url);
+    return std::string(url);
 
 #if 0
     else {
@@ -42,7 +42,7 @@ std::string FileOpt::get_current_url() {
     _print("log system abs url : %s\n", url.data());
     return url;
 #endif
-    return std::__cxx11::string(url);
+    return std::string(url);
 }
 //! 判断当前文件路径是否存在,不存在创建文件夹路径 ex: /a/b/c/d.txt  -> mkdir(/a/b/c)
 //! \param file_url &std::string 文件路径
