@@ -7,7 +7,7 @@
 //! 构造函数
 //! \param capacity
 Buffer::Buffer(int capacity) : capacity_(capacity), length_(0){
-    print("构造器");
+    print_ln("构造器");
     buf_ = capacity_ == 0 ? nullptr: new unsigned char [capacity]{};
 }
 
@@ -16,7 +16,7 @@ Buffer::Buffer(int capacity) : capacity_(capacity), length_(0){
 //! \return
 Buffer &Buffer::operator=(const Buffer &buffer) {
     if(&buffer!= this){
-        print("拷贝运算符");
+        print_ln("拷贝运算符");
         this->capacity_ = buffer.capacity_;
         this->length_ = buffer.length_;
         delete[] this->buf_;
@@ -30,7 +30,7 @@ Buffer &Buffer::operator=(const Buffer &buffer) {
 //! \param buffer
 Buffer::Buffer(Buffer &buffer):Buffer(0){
 
-    print("拷贝构造器");
+    print_ln("拷贝构造器");
 #if 0
     this->capacity_ = buffer.capacity_;
     this->length_ = buffer.length_;
@@ -43,7 +43,7 @@ Buffer::Buffer(Buffer &buffer):Buffer(0){
 }
 
 Buffer::~Buffer() {
-    print("析构");
+    print_ln("析构");
     delete [] this->buf_;
 
 }
@@ -70,7 +70,7 @@ bool Buffer::write(unsigned char value) {
 
 Buffer::Buffer(Buffer &&buffer)  noexcept :capacity_(0), length_(0),
                                            buf_(nullptr) {
-    print("移动构造器");
+    print_ln("移动构造器");
 #if 0
     if(this != &buffer){
         this->capacity_ = buffer.capacity_;
@@ -89,7 +89,7 @@ Buffer::Buffer(Buffer &&buffer)  noexcept :capacity_(0), length_(0),
 }
 
 Buffer &Buffer::operator=(Buffer &&buffer) noexcept{
-    print("移动拷贝");
+    print_ln("移动拷贝");
     if(this != &buffer){
         this->capacity_ = buffer.capacity_;
         this->length_ = buffer.length_;

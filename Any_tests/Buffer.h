@@ -10,14 +10,14 @@
 #include <stdio.h>
 
 template<typename T>
-void print(T t){
+void print_ln(T t){
     std::cout<< t << std::endl;
 }
 
 template<typename T,typename ...U>
-void print(T t,U...u){
+void print_ln(T t,U...u){
     std::cout << t << " ";
-    print(u...);
+    print_ln(u...);
 }
 
 template<typename T>
