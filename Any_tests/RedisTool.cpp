@@ -191,8 +191,8 @@ std::vector<std::string> RedisTool::get_all_items(std::string &key) {
     redisReply *reply;
     reply = (redisReply *) redisCommand(c_redis_, "ZCOUNT %s ", key.c_str());
     //
-//    int valueSize = (int) reply->integer;
-//    print("item size: %d\r\n", valueSize);
+    //    int valueSize = (int) reply->integer;
+    //    print("item size: %d\r\n", valueSize);
     // ZRANGEBYSCORE salary -inf +inf
     reply = (redisReply *) redisCommand(c_redis_, "ZRANGE %s 0 -1", key.c_str());
     print("item type: %d\r\n", reply->type);
@@ -226,6 +226,38 @@ int RedisTool::get_size(std::string &key, Data_type type) {
     return (int) reply->integer;
 }
 
+int RedisTool::get_key_item_size(std::string &key) {
+    if (c_redis_ == nullptr || c_redis_->err) {
+        print("redis opt error: %s\r\n", c_redis_->errstr);
+        return kRedisERR;
+    }
+
+    redisReply *reply;
+    reply = (redisReply *) redisCommand(c_redis_, "ZCARD %s", key.c_str() );
+
+    //    int valueSize = (int) reply->integer;
+    return (int) reply->integer;
+    return 0;
+}
 
 
+long get_now_time_dec() {
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    struct tm t;
+    t = *localtime(&tv.tv_sec);
 
+
+    int iY, iM, iD, iH, iMin, iS;
+
+    iY = t.tm_year + 1900;
+    iM = t.tm_mon + 1;
+    iD = t.tm_mday;
+    iH = t.tm_hour;
+    iMin = t.tm_min;
+    iS = t.tm_sec;
+
+
+    //    print("%d-%0d-%0d %0d:%02d:%02d\n", iY, iM, iD, iH, iMin, iS);
+    //    print("%ld\n",(long)mktime(&t));
+    return (long)mktime(&t);}

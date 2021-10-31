@@ -54,6 +54,7 @@ public:
     int del_key(std::string& key);
     int del_type_items(std::string& key, Data_type type);
 
+    int get_key_item_size(std::string& key);
     int get_size(std::string& key, Data_type type);
 
 private:
@@ -64,5 +65,6 @@ private:
     redisContext* c_redis_;
 };
 
+long get_now_time_dec();
 
 #endif //TEST_REDISTOOL_H
