@@ -12,6 +12,7 @@
 #include <cassert>
 #include <string.h>
 #include <map>
+#include "RedisTool.h"
 
 #include "rapidjson/document.h"
 #include "rapidjson/writer.h"
@@ -120,7 +121,7 @@ enum JsonExecStatus{
         "blh": null
       }
     },
-    {
+        {
       "function": "ptz",
       "value": {
         "cmd": "ctl_level_left",
@@ -244,6 +245,8 @@ long get_now_time_dec();
 
 class JsonDealClass {
 public:
+    JsonDealClass();
+    ~JsonDealClass();
     int parse_chassis_data_to_dbs(std::string &json,
                                   std::string &map_name, int &pos_id, std::string &dbs_value) ;
 
@@ -254,9 +257,15 @@ public:
                                 std::vector<std::string> &vec_vlc_cmd, std::vector<std::string> &vec_vlc,
                                 std::vector<std::string> &vec_irc_cmd, std::vector<std::string> &vec_irc);
 
-    int from_db_gen_map_json(const std::string& mapname, std::string& json);
-    int from_db_gen_pos_json(const std::vector<int >& nid_list, std::string& json);
-    int save_map_2_dbs(std::string& json);
+    int from_db_gen_map_json(const std::string& cmd_json, std::string& ret_json);
+//    int from_db_gen_pos_json(const std::vector<int >& nid_list, std::string& json);
+    int save_map_2_dbs(const std::string& json);
+
+    int from_db_gen_map_all_json(const std::string& cmd_json, std::string& ret_json);
+
+    int arrive_parse (const std::string& cmd_json);
+
+    RedisTool * r;
 private:
 
 };

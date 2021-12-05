@@ -19,6 +19,7 @@
 #include <string>
 #include <vector>
 #include <string.h>
+#include <map>
 
 enum RedisStatus{
     RedisBaseStatus        = -500,
@@ -45,17 +46,19 @@ public:
     int init_redis();
     //  sorted set operation
 
-    inline int zADD_item(std::string& key, Data_type type, std::string& value);
-    std::vector<std::string> get_type_items(std::string& key, Data_type type);
+    inline int zADD_item(std::string& key, unsigned int type, std::string& value);
+    std::vector<std::string> get_type_items(std::string& key, unsigned int type);
     std::vector<std::string> get_all_items(std::string& key);
 
-    int zADD_items(std::string& key, Data_type type, std::vector<std::string>& items, int items_size);
+    std::multimap<int, std::string> get_all_scores_key(std::string& key);
+
+    int zADD_items(std::string& key, unsigned int type, std::vector<std::string>& items, int items_size);
 
     int del_key(std::string& key);
-    int del_type_items(std::string& key, Data_type type);
+    int del_type_items(std::string& key, unsigned int type);
 
     int get_key_item_size(std::string& key);
-    int get_size(std::string& key, Data_type type);
+    int get_size(std::string& key, unsigned int type);
 
 private:
     std::string redis_ip_;
@@ -68,3 +71,5 @@ private:
 long get_now_time_dec();
 
 #endif //TEST_REDISTOOL_H
+
+

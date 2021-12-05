@@ -5,7 +5,7 @@
 #include "RedisTool.h"
 
 RedisTool::RedisTool() : redis_ip_("127.0.0.1"), redis_port_(6379), c_redis_(nullptr) {
-
+    init_redis();
 }
 
 
@@ -42,7 +42,7 @@ RedisTool::~RedisTool() {
 //! \param type 集合的 score value
 //! \param value
 //! \return
-int RedisTool::zADD_item(std::string &key, Data_type type, std::string &value) {
+int RedisTool::zADD_item(std::string &key, unsigned int type, std::string &value) {
     if (c_redis_ == nullptr || c_redis_->err) {
         print("redis opt error: %s\r\n", c_redis_->errstr);
         return kRedisERR;
@@ -74,7 +74,7 @@ int RedisTool::zADD_item(std::string &key, Data_type type, std::string &value) {
 //! \param key 集合的 score value
 //! \param type
 //! \return vector
-std::vector<std::string> RedisTool::get_type_items(std::string &key, Data_type type) {
+std::vector<std::string> RedisTool::get_type_items(std::string &key, unsigned int type) {
 
     if (c_redis_ == nullptr || c_redis_->err) {
         print("redis opt error: %s\r\n", c_redis_->errstr);
@@ -110,7 +110,7 @@ std::vector<std::string> RedisTool::get_type_items(std::string &key, Data_type t
 //! \param items
 //! \param items_size
 //! \return 返回添加的成功的条目
-int RedisTool::zADD_items(std::string &key, Data_type type, std::vector<std::string> &items, int items_size) {
+int RedisTool::zADD_items(std::string &key, unsigned int type, std::vector<std::string> &items, int items_size) {
     int cnt = 0;
     for (int i = 0; i < items_size; ++i) {
         int ret_val = zADD_item(key, type, items.at(i));
@@ -155,7 +155,7 @@ int RedisTool::del_key(std::string &key) {
 //! \param key
 //! \param type
 //! \return
-int RedisTool::del_type_items(std::string &key, Data_type type) {
+int RedisTool::del_type_items(std::string &key, unsigned int type) {
     if (c_redis_ == nullptr || c_redis_->err) {
         print("redis opt error: %s\r\n", c_redis_->errstr);
         return kRedisERR;
@@ -185,7 +185,7 @@ int RedisTool::del_type_items(std::string &key, Data_type type) {
 std::vector<std::string> RedisTool::get_all_items(std::string &key) {
     if (c_redis_ == nullptr || c_redis_->err) {
         print("redis opt error: %s\r\n", c_redis_->errstr);
-        return std::vector<std::string>();
+        return {};
     }
 
     redisReply *reply;
@@ -201,7 +201,7 @@ std::vector<std::string> RedisTool::get_all_items(std::string &key) {
     redisReply **replyVector = reply->element;//获取数组指针
     if(replyVector == nullptr){
         print("No items\r\n");
-        return std::vector<std::string>();
+        return {};
     }
     std::vector<std::string> result;
     for (int i = 0; i < reply->elements; i++) {
@@ -213,7 +213,7 @@ std::vector<std::string> RedisTool::get_all_items(std::string &key) {
     return result;
 }
 
-int RedisTool::get_size(std::string &key, Data_type type) {
+int RedisTool::get_size(std::string &key, unsigned int type) {
     if (c_redis_ == nullptr || c_redis_->err) {
         print("redis opt error: %s\r\n", c_redis_->errstr);
         return kRedisERR;
@@ -237,7 +237,53 @@ int RedisTool::get_key_item_size(std::string &key) {
 
     //    int valueSize = (int) reply->integer;
     return (int) reply->integer;
-    return 0;
+}
+
+std::multimap<int, std::string> RedisTool::get_all_scores_key(std::string &key) {
+
+    if (c_redis_ == nullptr || c_redis_->err) {
+        print("redis opt error: %s\r\n", c_redis_->errstr);
+        return {};
+    }
+
+    redisReply *reply;
+//    reply = (redisReply *) redisCommand(c_redis_, "ZCARD %s ", key.c_str());
+//    unsigned int valueSize = reply->integer;
+//    if( valueSize == 0){
+//        return {};
+//    }
+
+    reply = (redisReply *) redisCommand(c_redis_, "ZRANGE %s 0 -1 WITHSCORES", key.c_str());
+    print("item type: %d\r\n", reply->type);
+    print("item elements size: %ld\r\n", reply->elements);
+
+    redisReply **replyVector = reply->element;//获取数组指针
+    if(replyVector == nullptr){
+        print("No items\r\n");
+        return {};
+    }
+    std::multimap<int, std::string> result;
+    int map_key;
+    std::string map_val;
+
+    for (int i = 0; i < reply->elements; i++) {
+
+        if( (i%2) == 0){
+            map_val.clear();
+            map_val = (*replyVector)->str;
+            print("value: %s\r\n", (*replyVector)->str);
+
+        }
+        if((i%2) == 1){
+            map_key = strtol( (*replyVector)->str, nullptr, 10);
+            result.insert(std::pair<int, std::string>(map_key, map_val));
+            print("value: %s\r\n", (*replyVector)->str);
+        }
+
+        replyVector++;
+    }
+
+    return result;
 }
 
 
