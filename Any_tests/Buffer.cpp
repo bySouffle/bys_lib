@@ -59,6 +59,18 @@ std::ostream &operator<<(std::ostream &os, Buffer &buffer) {
 
 }
 
+constexpr int get_len(int len) {
+    return len;
+}
+
+void constexpr_test() {
+    const int len = 4;    // const
+    char a[len] = {};
+    char b[get_len(2)] = {};
+
+}
+
+
 bool Buffer::write(unsigned char value) {
     if(length_ == capacity_){
         return false;

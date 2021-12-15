@@ -23,12 +23,14 @@ include_directories(File_lib)
 include_directories(NetWork_lib)
 include_directories(TypeConversion_lib)
 include_directories(System_lib)
+include_directories(DataBase_lib)
 
 
 add_subdirectory(File_lib)
 add_subdirectory(NetWork_lib)
 add_subdirectory(TypeConversion_lib)
 add_subdirectory(System_lib)
+add_subdirectory(DataBase_lib)
 
 target_link_libraries(bys_lib File_lib NetWork_lib TypeConversion_lib pthread)
 
@@ -37,3 +39,4 @@ add_subdirectory(NetWork_tests)
 add_subdirectory(TypeConversion_tests)
 add_subdirectory(System_tests)
 add_subdirectory(Any_tests)
+add_subdirectory(DataBase_tests)

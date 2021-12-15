@@ -45,6 +45,7 @@ TEST(buffer, buf){
 
     std::tuple<int,int,int,int,int> t = {1,2,3,4,5};
     println({1, 2, 3, 4});
+    print_ln(1,2,3,"4");
 }
 
 
@@ -396,4 +397,17 @@ TEST(rapidjson, reader){
     Reader reader;
     StringStream ss(json.data());
     reader.Parse(ss, handler);
+}
+
+TEST(int_, test){
+    int a = 5;
+    int b = 2;
+    cout << a/b<<endl;
+    cout << a%b<<endl;
+    string aa = "abc";
+    string bb = "zzz";
+    if(aa != bb){
+        cout << bb <<endl;
+    }
+
 }

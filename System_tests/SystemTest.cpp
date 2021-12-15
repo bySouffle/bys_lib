@@ -11,7 +11,7 @@ protected:
         systemopt = new SystemOpt();
     }
 
-    virtual void TearD() {
+    virtual void TearDown() {
         delete systemopt;
     }
 

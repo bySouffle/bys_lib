@@ -39,7 +39,7 @@ enum Data_type{
 
 class RedisTool {
 public:
-    RedisTool();
+        RedisTool();
     RedisTool(std::string &ip, int port);
     ~RedisTool();
     int init_redis();

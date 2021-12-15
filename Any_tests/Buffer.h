@@ -9,6 +9,31 @@
 #include <iostream>
 #include <stdio.h>
 
+//template<typename T>
+//void print(T t){
+//    std::cout<< t << std::endl;
+//}
+
+/*template<typename T,typename ...U>
+void print(T t,U...u){
+    if constexpr(sizeof ...(U) == 0){
+        std::cout << t << " ";
+    } else{
+        std::cout << t << ", ";
+        print(u...);
+    }
+
+}*/
+
+template<typename T>
+void println(std::initializer_list<T> args ) {
+    for(auto arg:args){
+        std::cout << arg << ", ";
+    }
+}
+constexpr int get_len(int len);
+void constexpr_test();
+
 template<typename T>
 void print_ln(T t){
     std::cout<< t << std::endl;
@@ -18,15 +43,6 @@ template<typename T,typename ...U>
 void print_ln(T t,U...u){
     std::cout << t << " ";
     print_ln(u...);
-}
-
-template<typename T>
-void println(std::initializer_list<T> args ) {
-    for(auto arg:args){
-        std::cout << arg << ", ";
-    }
-
-
 }
 
 class Buffer {
