@@ -411,3 +411,11 @@ TEST(int_, test){
     }
 
 }
+
+#include <stack>
+
+TEST(stack, index){
+    stack<int> st;
+    st.push(1);
+    st.top().ind
+}
