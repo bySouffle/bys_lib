@@ -18,7 +18,7 @@
 #include "document.h"
 #include "pointer.h"
 #include "stringbuffer.h"
-#include "error/en.h"
+#include "rapidjson/error/en.h"
 #include "uri.h"
 #include <cmath> // abs, floor
 
@@ -35,7 +35,7 @@
 #endif
 
 #if RAPIDJSON_SCHEMA_USE_INTERNALREGEX
-#include "internal/regex.h"
+#include "rapidjson/internal/regex.h"
 #elif RAPIDJSON_SCHEMA_USE_STDREGEX
 #include <regex>
 #endif

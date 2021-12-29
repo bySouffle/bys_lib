@@ -19,7 +19,7 @@
 #ifndef RAPIDJSON_DIYFP_H_
 #define RAPIDJSON_DIYFP_H_
 
-#include "../rapidjson.h"
+#include "rapidjson/rapidjson.h"
 #include "clzll.h"
 #include <limits>
 

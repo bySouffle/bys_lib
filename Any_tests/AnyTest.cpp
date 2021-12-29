@@ -8,6 +8,12 @@
 #include "TempClass.h"
 #include "Buffer.h"
 
+#include "rapidjson/reader.h"
+#include "rapidjson/pointer.h"
+
+using namespace rapidjson;
+using namespace std;
+
 TEST(hellow, out) {
     printf("hello wolrd\r\n");
 }
@@ -291,10 +297,7 @@ TEST(substr, test) {
     std::cout << topic1 << std::endl;
 };
 
-#include "rapidjson/reader.h"
 
-using namespace rapidjson;
-using namespace std;
 
 TEST(rapidjson, reader) {
     struct MyHandler : public BaseReaderHandler<UTF8<>, MyHandler> {
@@ -893,4 +896,221 @@ TEST(arrive_parse, test){
     JsonDealClass d;
     string s(R"({ "args":[{"status":"ok"}] })");
     d.arrive_parse(s);
+}
+
+TEST(rapidjson, write){
+    using namespace rapidjson;
+    StringBuffer s;
+    Writer<StringBuffer> writer(s);
+    writer.StartObject();
+    writer.Key("os");
+    {
+        writer.StartObject();
+        writer.Key("sysname");
+        writer.String("Linux");
+        writer.Key("nodename");
+        writer.String("siasun-NUC8i7BEH");
+        writer.EndObject();
+    }
+    writer.Key("mac");
+    writer.String("1C-69-7A-6B-E8-18");
+    {
+        writer.Key("mac");
+        writer.StartArray();
+        writer.Int(16262784);
+        writer.Int(12159080);
+        writer.EndArray();
+    }
+    writer.EndObject();
+    cout<< s.GetString()<<endl;
+    s.Clear();
+    cout<< " " <<s.GetString() <<" ";
+
+}
+
+TEST(rapidjson, write2){
+
+    StringBuffer s;
+    Writer<StringBuffer> writer(s);
+
+    writer.StartObject();
+
+    //  1. 获取os信息
+#if 0
+    p_this->s_->GetSysInfo(u);
+        printf(">>>>>>>>>>>>>> os info >>>>>>>>>>>>>>>>>\n" );
+        printf("1 [sysname %s]\n", u->sysname);
+        printf("2 [nodename %s]\n", u->nodename);
+        printf("3 [release %s]\n", u->release);
+        printf("4 [version %s]\n", u->version);
+        printf("5 [machine %s]\n", u->machine);
+        printf("6 [domainname %s]\n", u->domainname);
+        printf("<<<<<<<<<<< os info  end <<<<<<<<<<<<<<<\n" );
+#endif
+    writer.Key("os");
+    {
+
+        writer.StartObject();
+        writer.Key("sysname");
+        writer.String("u->sysname");
+        writer.Key("nodename");
+        writer.String("u->nodename");
+        writer.Key("release");
+        writer.String("u->release");
+        writer.Key("version");
+        writer.String("u->version");
+        writer.Key("arch");
+        writer.String("u->machine");
+        writer.Key("domainname");
+        writer.String("u->domainname");
+        writer.EndObject();
+    }
+
+    //  2. 获取MAC
+#if 0
+    mac_.append( p_this->s_->GetSysMac() ) ;
+        printf(">>>>>>>>>>>>>> mac info >>>>>>>>>>>>>>>>>\n" );
+        printf("1 [mac %s]\n", mac_.data());
+        printf("<<<<<<<<<<< mac info  end <<<<<<<<<<<<<<<\n" );
+#endif
+    writer.Key("mac");
+    writer.String("mac_.data()");
+
+    //  3. 获取CPU
+//    cpu_usage_ = p_this->s_->GetTotalCpuPercent();
+#if 0
+    printf(">>>>>>>>>>>>>> cpu info >>>>>>>>>>>>>>>>>\n" );
+        printf("1 [cpu %.4f]\n", cpu_usage_);
+        printf("<<<<<<<<<<< cpu info  end <<<<<<<<<<<<<<<\n" );
+#endif
+    writer.Key("cpu_usage");
+    writer.Double(12.22);
+
+    //  4. 获取内存
+//    p_this->s_->GetMemInfo(*mem_info_);
+#if 0
+    printf(">>>>>>>>>>>>>> mem info >>>>>>>>>>>>>>>>>\n" );
+        printf("1 [total %d]\n", mem_info_->total);
+        printf("1 [free %d]\n", mem_info_->free);
+        printf("1 [buffers %d]\n", mem_info_->buffers);
+        printf("1 [cached %d]\n", mem_info_->cached);
+        printf("<<<<<<<<<<< mem info  end <<<<<<<<<<<<<<<\n" );
+#endif
+    {
+        writer.Key("mem_info");
+        writer.StartArray();
+        writer.Int(11);
+        writer.Int(22);
+        writer.EndArray();
+    }
+
+    //  5. 获取硬盘信息
+//    p_this->s_->GetDiskPercent(disk_info_);
+#if 0
+    printf(">>>>>>>>>>>>>> disk info >>>>>>>>>>>>>>>>>\n" );
+        printf("1 [total %d GB]\n", disk_info_->total);
+        printf("1 [free %d GB]\n", disk_info_->free);
+        printf("1 [used %d GB]\n", disk_info_->used);
+        printf("1 [Usage %.2f ]\n", disk_info_->Usage);
+        printf("<<<<<<<<<<< disk info  end <<<<<<<<<<<<<<<\n" );
+#endif
+    {
+        writer.Key("disk_info");
+        writer.StartArray();
+        writer.Int(11);
+        writer.Int(22);
+        writer.Int(33);
+        writer.Double(11.22);
+        writer.EndArray();
+    }
+    writer.EndObject();
+
+    cout << s.GetString();
+}
+
+TEST(trans_topic, test){
+    string s("/aaa/bb/ccc");
+    string ret;
+
+
+//    int end = ret.find_first_of('/', 1);
+//    s.substr(1, end-1);
+//    s
+    int start = 0;
+    int end = 0;
+    vector<string> vec;
+
+    for (int i = 0; i < 3; ++i) {
+        end = s.find_first_of('/', start + 1);
+        vec.emplace_back(s.substr(start, end - start));
+        start = end;
+    }
+    ret.append(vec.at(1)).append(vec.at(0)).append(vec.at(2));
+    cout << ret;
+
+}
+
+TEST(zzz,zzz){
+    cout << 100/11 <<endl;
+}
+
+TEST(rapidjson, create){
+    Document rpdjson;
+    Pointer("/cmd").Set(rpdjson, "get_a_picture");
+    Pointer("/save_url").Set(rpdjson, "url.data()");
+    Pointer("/pos/0").Set(rpdjson,3.002);
+    Pointer("/pos/1").Set(rpdjson,4.02);
+    Pointer("/temperature").Set(rpdjson,5.002);
+    Pointer("/index/0").Set(rpdjson,1);
+    Pointer("/index/1").Set(rpdjson,2);
+
+    StringBuffer strbuf;
+    Writer<StringBuffer> writer(strbuf);
+    rpdjson.Accept(writer);
+
+    if(rpdjson["cmd"] == "get_a_picture"){
+        cout<<"1zzzzz\n";
+    }
+    cout << strbuf.GetString() << endl;
+
+}
+string getStringFromJson(const string &jsStr, const string &strKey)
+{
+    Document document;
+    if (document.Parse(jsStr.c_str()).HasParseError() || !document.HasMember(strKey.c_str()))
+    {
+        return "";
+    }
+    const rapidjson::Value &jv = document[strKey.c_str()];
+    return jv.GetString();
+};
+
+TEST(goto_reply, create){
+
+
+    string goto_reply(R"({"args":[{"status":"ok"}]})");
+    Document document;
+    document.Parse(goto_reply.data());
+    const Value& args = document["args"];
+    assert(args.IsArray());
+    cout << args[0]["status"].GetString();
+
+
+
+
+
+
+
+
+
+//
+//    StringBuffer strbuf;
+//    Writer<StringBuffer> writer(strbuf);
+//    rpdjson.Accept(writer);
+//
+//    if(rpdjson["cmd"] == "get_a_picture"){
+//        cout<<"1zzzzz\n";
+//    }
+//    cout << strbuf.GetString() << endl;
+
 }

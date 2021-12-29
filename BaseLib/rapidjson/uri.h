@@ -15,7 +15,7 @@
 #ifndef RAPIDJSON_URI_H_
 #define RAPIDJSON_URI_H_
 
-#include "internal/strfunc.h"
+#include "rapidjson/internal/strfunc.h"
 
 #if defined(__clang__)
 RAPIDJSON_DIAG_PUSH

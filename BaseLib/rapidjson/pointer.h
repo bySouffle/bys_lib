@@ -17,7 +17,7 @@
 
 #include "document.h"
 #include "uri.h"
-#include "internal/itoa.h"
+#include "rapidjson/internal/itoa.h"
 
 #ifdef __clang__
 RAPIDJSON_DIAG_PUSH

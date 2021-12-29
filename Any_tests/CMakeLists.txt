@@ -6,6 +6,9 @@ project(Any_tests)
 set(gtest_SOURCE_DIR /googletest-1.10.x/googletest)
 include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 
+set(baseLib_SOURCE_DIR /BaseLib)
+include_directories(${baseLib_SOURCE_DIR}/rapidjson ${baseLib_SOURCE_DIR})
+
 # test code
 set(TEST_SOURCES AnyTest.cpp TempClass.h TempClass.cpp Buffer.cpp Buffer.h JsonDealClass.cpp JsonDealClass.h RedisTool.cpp RedisTool.h cJSON.h cJSON.cpp)
 # adding the gtest_run target

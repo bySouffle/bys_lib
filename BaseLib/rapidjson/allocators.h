@@ -16,7 +16,7 @@
 #define RAPIDJSON_ALLOCATORS_H_
 
 #include "rapidjson.h"
-#include "internal/meta.h"
+#include "rapidjson/internal/meta.h"
 
 #include <memory>
 
