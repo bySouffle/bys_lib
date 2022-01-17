@@ -2,7 +2,7 @@
 project(JsonHandle_lib)
 
 set(HEADER_FILES  archiver/archiver.h  )
-set(SOURCE_FILES  archiver/archiver.cpp archiver/archiver_obj.h)
+set(SOURCE_FILES  archiver/archiver.cpp archiver/archiver_obj.h archiver/PtzTaskJsonReader.cpp archiver/PtzTaskJsonReader.h)
 
 include_directories(rapidjson)
 

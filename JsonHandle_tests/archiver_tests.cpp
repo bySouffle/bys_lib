@@ -5,6 +5,8 @@
 #include "gtest/gtest.h"
 #include "archiver/archiver.h"
 #include "archiver/archiver_obj.h"
+#include "archiver/PtzTaskJsonReader.h"
+
 
 TEST(reader, test){
     Student s;
@@ -152,3 +154,25 @@ TEST(gen_json, test){
 }
 ////////////////////////////////////////////////////////////////////////////////
 
+TEST(ptz, data_write){
+    int timestamp = 202101172047;
+    std::string function("ptz");
+    std::string cmd("auto_exec");
+    int level_angle = 360;
+    int pitch_angle = 90;
+    int zoom_value = 100;
+    int focus_value = 10;
+    std::string save_url("a/c/v");
+
+    PtzTaskJson data(timestamp, function, cmd, level_angle, pitch_angle, zoom_value, focus_value,
+                     save_url);
+    JsonWriter writer;
+    writer & data;
+    std::cout << writer.GetString() << "\n";
+
+    JsonReader reader(writer.GetString() );
+    PtzTaskJson read_data;
+    reader &read_data;
+
+    read_data.Print(std::cout);
+}
