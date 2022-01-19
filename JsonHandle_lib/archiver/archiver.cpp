@@ -209,6 +209,29 @@ JsonReader &JsonReader::SetNull() {
     return *this;
 }
 
+JsonReader &JsonReader::operator&(int64_t &l) {
+    if (!mError) {
+        if (CURRENT.IsNumber()) {
+            l = CURRENT.GetInt64();
+            Next();
+        }
+        else
+            mError = true;
+    }
+    return *this;}
+
+JsonReader &JsonReader::operator&(uint64_t &ul) {
+    if (!mError) {
+        if (CURRENT.IsNumber()) {
+            ul = CURRENT.GetUint64();
+            Next();
+        }
+        else
+            mError = true;
+    }
+    return *this;}
+
+
 #undef DOCUMENT
 #undef STACK
 #undef TOP
@@ -295,6 +318,17 @@ JsonWriter& JsonWriter::SetNull() {
     WRITER->Null();
     return *this;
 }
+
+JsonWriter &JsonWriter::operator&(int64_t &l) {
+    WRITER->Int64(l);
+    return *this;
+}
+
+JsonWriter &JsonWriter::operator&(uint64_t &ul) {
+    WRITER->Uint64(ul);
+    return *this;
+}
+
 #undef STREAM
 #undef WRITER
 //  <<<<<<<<<<<<<<<<<<<<<<<<<<<  Writer     (End)    <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

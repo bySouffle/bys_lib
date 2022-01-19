@@ -33,6 +33,8 @@ public:
     JsonReader& operator&(unsigned& u);
     JsonReader& operator&(int& i);
     JsonReader& operator&(double& d);
+    JsonReader& operator&(int64_t & l);
+    JsonReader& operator&(uint64_t & ul);
     JsonReader& operator&(std::string& s);
 
     JsonReader& SetNull();
@@ -83,6 +85,8 @@ public:
     JsonWriter& operator&(unsigned& u);
     JsonWriter& operator&(int& i);
     JsonWriter& operator&(double& d);
+    JsonWriter& operator&(int64_t & l);
+    JsonWriter& operator&(uint64_t & ul);
     JsonWriter& operator&(std::string& s);
     JsonWriter& SetNull();
 

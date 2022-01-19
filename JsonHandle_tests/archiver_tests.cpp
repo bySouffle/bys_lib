@@ -155,13 +155,13 @@ TEST(gen_json, test){
 ////////////////////////////////////////////////////////////////////////////////
 
 TEST(ptz, data_write){
-    int timestamp = 202101172047;
+    uint64_t timestamp = 202101172047;
     std::string function("ptz");
     std::string cmd("auto_exec");
-    int level_angle = 360;
-    int pitch_angle = 90;
-    int zoom_value = 100;
-    int focus_value = 10;
+    unsigned  level_angle = 45;
+    unsigned  pitch_angle = 90;
+    unsigned  zoom_value = 180;
+    unsigned  focus_value = 360;
     std::string save_url("a/c/v");
 
     PtzTaskJson data(timestamp, function, cmd, level_angle, pitch_angle, zoom_value, focus_value,
@@ -175,4 +175,26 @@ TEST(ptz, data_write){
     reader &read_data;
 
     read_data.Print(std::cout);
+
+    std::array<unsigned char, 2> arr{};
+    read_data.gen_device_param(arr, PtzTaskJson::kLevel);
+    for (auto& it: arr) {
+        printf("0x%x\n", it);
+    }
+    std::cout << std::endl;
+    read_data.gen_device_param(arr, PtzTaskJson::kPitch);
+    for (auto& it: arr) {
+        printf("0x%x\n", it);
+    }
+    std::cout << std::endl;
+    read_data.gen_device_param(arr, PtzTaskJson::kZoom);
+    for (auto& it: arr) {
+        printf("0x%x\n", it);
+    }
+    std::cout << std::endl;
+    read_data.gen_device_param(arr, PtzTaskJson::kFocus);
+    for (auto& it: arr) {
+        printf("0x%x\n", it);
+    }
+    std::cout << std::endl;
 }

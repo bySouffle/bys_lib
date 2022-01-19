@@ -9,15 +9,23 @@
 #include <iostream>
 #include <utility>
 #include <vector>
+#include <array>
 
 class PtzTaskJson {
 public:
+    enum ParamType{
+        kLevel = 0,
+        kPitch = 1,
+        kZoom  = 2,
+        kFocus = 3,
+    };
+
     PtzTaskJson() : timestamp(), function(), cmd(),
                     level_angle(), pitch_angle(), zoom_value(), focus_value(),
                     save_url() {}
 
-    PtzTaskJson(int tm, std::string func, std::string cmd, int level, int pitch,
-                int zoom, int focus, std::string url) : timestamp(tm), function(std::move(func)), cmd(std::move(cmd)),
+    PtzTaskJson(uint64_t tm, std::string func, std::string cmd, unsigned short level, unsigned short pitch,
+                unsigned short zoom, unsigned short focus, std::string url) : timestamp(tm), function(std::move(func)), cmd(std::move(cmd)),
                                                         level_angle(level), pitch_angle(pitch), zoom_value(zoom),
                                                         focus_value(focus),
                                                         save_url(std::move(url)) {};
@@ -25,18 +33,59 @@ public:
     ~PtzTaskJson()= default;
 
     void Print(std::ostream& os);
+
+    //  v2.0 生成给设备的数据
+    int gen_device_param(std::array<unsigned char, 2> &device_param, ParamType type){
+//        kLevel = 0,
+//        kPitch = 1,
+//        kZoom  = 2,
+//        kFocus = 3,
+        switch (type) {
+            case kLevel:
+            {
+                unsigned   temp = level_angle*100;
+                device_param[0] = (temp     )& 0xff;
+                device_param[1] = (temp >> 8)& 0xff;
+                break;
+            }
+            case kPitch:
+            {
+                unsigned   temp = pitch_angle*100;
+                device_param[0] = (temp     )& 0xff;
+                device_param[1] = (temp >> 8)& 0xff;
+                break;
+            }
+            case kZoom:
+            {
+                unsigned   temp = zoom_value*100;
+                device_param[0] = (temp     )& 0xff;
+                device_param[1] = (temp >> 8)& 0xff;
+                break;
+            }
+            case kFocus:
+            {
+                unsigned   temp = focus_value*100;
+                device_param[0] = (temp     )& 0xff;
+                device_param[1] = (temp >> 8)& 0xff;
+                break;
+            }
+            default:
+                return -1;
+        }
+        return 0;
+    }
 protected:
 
     template<typename Archiver>
     friend Archiver& operator&(Archiver& ar, PtzTaskJson& s);
-    
-    int timestamp;
+
+    uint64_t timestamp;
     std::string function;
     std::string cmd;
-    int level_angle;
-    int pitch_angle;
-    int zoom_value;
-    int focus_value;
+    unsigned   level_angle;
+    unsigned   pitch_angle;
+    unsigned   zoom_value;
+    unsigned   focus_value;
     std::string save_url;
 
 };
