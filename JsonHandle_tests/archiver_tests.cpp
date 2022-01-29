@@ -198,3 +198,59 @@ TEST(ptz, data_write){
     }
     std::cout << std::endl;
 }
+
+////////////////////////////////////////////////////////////////////////////////
+#include "Capitalize/capitalize.h"
+TEST(toupper_json, capitalize){
+    using namespace rapidjson;
+        // Prepare JSON reader and input stream.
+    Reader reader;
+    char readBuffer[65536];
+
+    FILE *read_fp = fopen("/Users/bysouffle/CLionProjects/bys_lib/JsonHandle_tests/test_json.txt", "r");
+    //!     1. 初始化读取文件流对象
+    FileReadStream is(read_fp, readBuffer, sizeof(readBuffer));
+    std::cout << readBuffer << "\n";
+
+    // Prepare JSON writer and output stream.
+    char writeBuffer[65536];
+    FILE * write_fp = fopen("/Users/bysouffle/CLionProjects/bys_lib/JsonHandle_tests/test_json_upper.txt",
+                            "w");
+
+    //!     2. 初始化待写入的文件流对象
+    FileWriteStream os(write_fp, writeBuffer, sizeof(writeBuffer));
+    //!     3. 用文件流对象初始化write对象
+    Writer<FileWriteStream> writer(os);
+
+    // JSON reader parse from the input stream and let writer generate the output.
+    //!     4. 调用处理 handle
+    CapitalizeFilter<Writer<FileWriteStream> > filter(writer);
+    //!     5. 解析到文件
+    if (!reader.Parse(is, filter)) {
+        fprintf(stderr, "\nError(%u): %s\n", static_cast<unsigned>(reader.GetErrorOffset()), GetParseError_En(reader.GetParseErrorCode()));
+    }
+    std::cout << writeBuffer <<std::endl;
+}
+
+#include "Condense/condense.h"
+TEST(stdout_json, condense){
+    using namespace rapidjson;
+
+    char readBuffer[65536];
+
+    FILE *read_fp = fopen("/Users/bysouffle/CLionProjects/bys_lib/JsonHandle_tests/test_json.txt", "r");
+    //!     1. 初始化读取文件流对象
+    FileReadStream is(read_fp, readBuffer, sizeof(readBuffer));
+    std::cout << readBuffer << "\n";
+
+    // Prepare JSON writer and output stream.
+    char writeBuffer[65536];
+    FILE * write_fp = fopen("/Users/bysouffle/CLionProjects/bys_lib/JsonHandle_tests/test_json_std.txt",
+                            "w");
+
+    //!     2. 初始化待写入的文件流对象
+    FileWriteStream os(write_fp, writeBuffer, sizeof(writeBuffer));
+
+    //!     3. 校验输出
+    validation_stdout(is, os);
+}

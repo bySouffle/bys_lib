@@ -1,0 +1,14 @@
+{
+    "os": {
+        "linux_version": "ubuntu",
+        "release": "v5.14.2"
+    },
+    "base_info": {
+        "disk_info": [
+            100,
+            99,
+            1
+        ],
+        "mac": "00-00-00-00-00-00"
+    }
+}
