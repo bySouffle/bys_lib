@@ -2,10 +2,12 @@
 // Created by bysou on 2021/12/25.
 //
 
+#include <utility>
+
 #include "gtest/gtest.h"
-#include "archiver/archiver.h"
-#include "archiver/archiver_obj.h"
-#include "archiver/PtzTaskJsonReader.h"
+#include "Archiver/archiver.h"
+#include "Archiver/archiver_obj.h"
+#include "Archiver/PtzTaskJsonReader.h"
 
 
 TEST(reader, test){
@@ -75,9 +77,9 @@ class SysInfo{
 public:
     ~SysInfo();
     void Print(std::ostream& os);
-
-    SysInfo(const std::string& version,const std::string& release,const std::vector<int>&disk_info,
-            const std::string& mac);
+    SysInfo(){};
+    SysInfo(std::string  version,std::string  release,std::vector<int> disk_info,
+            std::string  mac);
 protected:
 
     template<typename Archiver>
@@ -117,9 +119,9 @@ Archiver& operator&(Archiver& ar, SysInfo& s){
 
 }
 
-SysInfo::SysInfo(const std::string &version, const std::string &release, const std::vector<int> &disk_info,
-                 const std::string &mac):linux_version(version), release(release),disk_info(disk_info),
-                                         mac(mac) {
+SysInfo::SysInfo(std::string version, std::string release, std::vector<int> disk_info,
+                 std::string mac):linux_version(std::move(version)), release(std::move(release)),disk_info(std::move(disk_info)),
+                                         mac(std::move(mac)) {
 
 }
 
@@ -150,6 +152,27 @@ TEST(gen_json, test){
     JsonWriter writer;
     writer & s;
     std::cout << writer.GetString()<<std::endl;
+
+    std::string jjson(R"({
+    "os": {
+        "linux_version": "ubuntu",
+        "release": "v5.14.2"
+    },
+    "base_info": {
+        "disk_info": [
+            100,
+            99,
+            1
+        ],
+        "mac": "00-00-00-00-00-00"
+    }
+})");
+    JsonReader reader(jjson.c_str());
+    SysInfo ss;
+    reader & ss;
+    ss.Print(std::cout);
+
+
 
 }
 ////////////////////////////////////////////////////////////////////////////////
@@ -200,6 +223,7 @@ TEST(ptz, data_write){
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+
 #include "Capitalize/capitalize.h"
 TEST(toupper_json, capitalize){
     using namespace rapidjson;
@@ -253,4 +277,222 @@ TEST(stdout_json, condense){
 
     //!     3. 校验输出
     validation_stdout(is, os);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//!!    接收到的云台数据数据解析测试
+#include "Archiver/mqtt_struct_ptz.h"
+TEST(ptz_opt_data, parse){
+    std::string ptz_cmd_payload(R"({"timestamp":1234567890, "level_type":0, "level_value":0,
+                                        "vertical_type":0, "vertical_value":0,
+                                        "zoom_type":0, "zoom_value":0,
+                                        "focus_type":0, "focus_value":0})");
+    PtzControl ptz_value;
+
+    JsonReader reader(ptz_cmd_payload.c_str());
+    reader & ptz_value;
+//    ptz_value.Print(std::cout);
+}
+
+TEST(ptz_opt_data, gen){
+    PtzControl ptz_value(1234567890, 0, 0, 0, 0, 0,
+                         0, 0, 0);
+    JsonWriter writer;
+    writer & ptz_value;
+
+    std::cout << writer.GetString() << std::endl;
+    std::string json(writer.GetString());
+    std::cout << json << std::endl;
+}
+
+TEST(ptz_opt_data, parse_left_etc){
+    std::string ptz_cmd_payload(R"({"timestamp":1234567890, "level_type":1, "level_value":20,
+                                        "vertical_type":1, "vertical_value":0,
+                                        "zoom_type":1, "zoom_value":500,
+                                        "focus_type":1, "focus_value":0})");
+    PtzControl ptz_value;
+
+    JsonReader reader(ptz_cmd_payload.c_str());
+    reader & ptz_value;
+    ptz_value.gen_cmd_array();
+//    ptz_value.Print(std::cout);
+}
+
+TEST(ptz_opt_data, parse_right_etc){
+    std::string ptz_cmd_payload(R"({"timestamp":1234567890, "level_type":2, "level_value":20,
+                                        "vertical_type":2, "vertical_value":10,
+                                        "zoom_type":2, "zoom_value":500,
+                                        "focus_type":2, "focus_value":10})");
+    PtzControl ptz_value;
+
+    JsonReader reader(ptz_cmd_payload.c_str());
+    reader & ptz_value;
+    ptz_value.gen_cmd_array();
+//    ptz_value.Print(std::cout);
+}
+
+TEST(ptz_opt_data, parse_pos_etc){
+    std::string ptz_cmd_payload(R"({"timestamp":1234567890, "level_type":3, "level_value":9,
+                                        "vertical_type":3, "vertical_value":10,
+                                        "zoom_type":3, "zoom_value":11,
+                                        "focus_type":3, "focus_value":12})");
+    PtzControl ptz_value;
+
+    JsonReader reader(ptz_cmd_payload.c_str());
+    reader & ptz_value;
+    ptz_value.gen_cmd_array();
+//    ptz_value.Print(std::cout);
+}
+
+TEST(ptz_opt_data, parse_que_etc){
+    std::string ptz_cmd_payload(R"({"timestamp":1234567890, "level_type":4, "level_value":0,
+                                        "vertical_type":4, "vertical_value":0,
+                                        "zoom_type":4, "zoom_value":0,
+                                        "focus_type":4, "focus_value":0})");
+    PtzControl ptz_value;
+
+    JsonReader reader(ptz_cmd_payload.c_str());
+    reader & ptz_value;
+    ptz_value.gen_cmd_array();
+//    ptz_value.Print(std::cout);
+}
+
+TEST(ptz_opt_data, parse_stop_etc){
+    std::string ptz_cmd_payload(R"({"timestamp":1234567890, "level_type":8, "level_value":0,
+                                        "vertical_type":8, "vertical_value":0,
+                                        "zoom_type":8, "zoom_value":0,
+                                        "focus_type":8, "focus_value":0})");
+    PtzControl ptz_value;
+
+    JsonReader reader(ptz_cmd_payload.c_str());
+    reader & ptz_value;
+    ptz_value.gen_cmd_array();
+//    ptz_value.Print(std::cout);
+}
+////////////////////////////////////////////////////////////////////////////////
+//!!    返回云台数据处理结果
+TEST(ptz_reply_data, gen_json){
+    std::string ptz_cmd_payload(R"({"timestamp":1234567890, "level_type":8, "level_value":0,
+                                        "vertical_type":8, "vertical_value":0,
+                                        "zoom_type":8, "zoom_value":0,
+                                        "focus_type":8, "focus_value":0})");
+    PtzControl ptz_value;
+    JsonReader reader(ptz_cmd_payload.c_str());
+    reader & ptz_value;
+
+//    ptz_value.Print(std::cout);
+
+    PtzControlReply ptz_reply(ptz_value, "1234567890", 0);
+    JsonWriter writer;
+    writer & ptz_reply;
+    std::cout << writer.GetString() << "\n";
+}
+
+////////////////////////////////////////////////////////////////////////////////
+#include "Archiver/mqtt_struct_switch.h"
+//!!    开关处理
+TEST(ptz_switch_exec, exec_json){
+    std::string switch_json(R"({"timestamp":1234567890, "switch":0})");
+    JsonReader reader(switch_json.c_str());
+    SwitchControl s;
+    reader & s;
+    s.Print(std::cout);
+}
+
+//!!    开关执行状态返回
+TEST(ptz_switch_reply, status_reply){
+    std::string switch_json(R"({"timestamp":1234567890, "cid":"1234567890", "status":"成功"})");
+    JsonReader reader(switch_json.c_str());
+    SwitchControlReply s;
+    reader & s;
+
+    s.Print(std::cout);
+
+    SwitchControlReply ss(1234567890, "1234567890", "成功");
+    JsonWriter writer;
+    writer & ss;
+    std::cout << writer.GetString() << std::endl;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+#include "Archiver/mqtt_struct_task.h"
+//!!    任务测试
+TEST(task_payload, parse){
+#if 0
+    std::string json(R"({"task_serial":"1234567890",
+ "timestamp":123123123,
+"task_type":"全面巡检"})");
+#endif
+
+    std::string json(R"~({"task_serial": "1234567890",
+	"task_type": "全面巡检",
+	"timestamp": 1234567890,
+	"task": [{
+		"task_id": 0,
+		"move": {
+			"roadmap": "map1",
+			"xyz": [1.1, 2.2, 3.3],
+			"rpy": [1.1, 2.2, 3.3]
+		},
+		"ptz": {
+			"pos": {
+				"level_type": 0,
+				"level_value": 36000,
+				"vertical_type": 0,
+				"vertical_value": 36000,
+				"zoom_type": 0,
+				"zoom_value": 36000,
+				"focus_type": 0,
+				"focus_value": 36000
+			},
+			"action": {
+				"reco_type": "表计读数(可识别)",
+				"save_type": "红外图片 + 可见光图片",
+				"meter_type": "电压表",
+				"TH": 1.1,
+				"reco_result": 1.1,
+				"alarm_level": "正常",
+				"max_temp": 1.1,
+				"x1_save_url": "/a/b/c"
+			}
+		}
+	}, {
+		"task_id": 1,
+		"move": {
+			"roadmap": "map1",
+			"xyz": [2.1, 2.2, 2.3],
+			"rpy": [2.1, 2.2, 2.3]
+		},
+		"ptz": {
+			"pos": {
+				"level_type": 0,
+				"level_value": 36000,
+				"vertical_type": 0,
+				"vertical_value": 36000,
+				"zoom_type": 0,
+				"zoom_value": 36000,
+				"focus_type": 0,
+				"focus_value": 36000
+			},
+			"action": {
+				"reco_type": "红外测温(不可识别)",
+				"save_type": "红外图片 + 可见光图片",
+				"meter_type": "油位表",
+				"TH": 2.2,
+				"reco_result": 2.2,
+				"alarm_level": "预警",
+				"max_temp": 2.2,
+				"x1_save_url": "/a/b/c"
+			}
+		}
+	}]
+})~");
+    JsonReader reader(json.c_str());
+    TaskParse s;
+    reader & s;
+
+    JsonWriter writer;
+    writer&s;
+    std::cout << writer.GetString() << "\n";
+
 }

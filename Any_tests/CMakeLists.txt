@@ -15,4 +15,4 @@ add_executable(Any_tests_run ${TEST_SOURCES})
 
 # linking File_lib_tests_run with lib which will be tested
 #set(TEST_LIB /File_lib)
-target_link_libraries(Any_tests_run gtest gtest_main hiredis)
+target_link_libraries(Any_tests_run gtest gtest_main hiredis JsonHandle_lib)

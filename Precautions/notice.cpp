@@ -92,7 +92,7 @@ TEST(No_5, std_array) {
 //!     它纯粹是一个编译时指令，指示编译器将 表达式 视为如同具有 新类型 类型一样处理。
 #include <cstddef>
 #include <bit>
-
+#include <bitset>
 template<typename T>
 void print_bytes(const T &input) {
     //   bug in arm
@@ -252,7 +252,6 @@ class Base_class {
 public:
     Base_class() {
         std::cout << "Base class\n";
-
     }
 
     virtual ~Base_class() {
@@ -262,7 +261,6 @@ public:
 
     virtual void Print() {
         std::cout << "print Base class\n";
-
     }
 };
 
@@ -279,7 +277,6 @@ public:
 
     void Print() override {
         std::cout << "print Derived class\n";
-
     }
 };
 

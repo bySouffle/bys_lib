@@ -412,10 +412,236 @@ TEST(int_, test){
 
 }
 
-#include <stack>
+#define AWESOME_MAKE_ENUM(name, ...) enum class name { __VA_ARGS__, __COUNT}; \
+inline std::ostream& operator<<(std::ostream& os, name value) { \
+std::string enumName = #name; \
+std::string str = #__VA_ARGS__; \
+int len = str.length(); \
+std::vector<std::string> strings; \
+std::ostringstream temp; \
+for(int i = 0; i < len; i ++) { \
+if(isspace(str[i])) continue; \
+        else if(str[i] == ',') { \
+        strings.push_back(temp.str()); \
+        temp.str(std::string());\
+        } \
+        else temp<< str[i]; \
+} \
+strings.push_back(temp.str()); \
+os << enumName <<"::" << strings[static_cast<int>(value)]; \
+return os;}
 
-TEST(stack, index){
-    stack<int> st;
-    st.push(1);
-    st.top().ind
+
+AWESOME_MAKE_ENUM (type,
+                   TYPE1 = 10,
+                   TYPE2 = 100
+);
+class ZE{
+public:
+
+};
+
+TEST(enum_in_class, test){
+//    ZE zzz;
+//    cout << sizeof(zzz);
+//    char a = 0x11;
+//    string aa = std::to_string(a) ;
+//    cout <<aa <<endl;
+
+
+//    std::stringstream ss;
+//    ss << std::hex << (int)a;
+//    std::string mystr = ss.str();
+//    cout << mystr;
+//
+    std::stringstream ss;
+
+//    ss << std::setfill('0') << std::hex << std::setw(2) << std::int8_t(-1);
+    ss << std::setfill('0') << std::hex << std::setw(2) << (unsigned int)std::int8_t(-1);
+    cout <<  ss.str() << "\n";
+}
+
+#include "archiver/PtzTaskJsonReader.h"
+
+
+TEST( ptz_parse_v2, test ){
+    struct pelco_d_info
+    {
+        unsigned char  m_sync ;
+
+        unsigned char  m_address ;
+
+        unsigned char  m_cmd_1 ;
+        unsigned char  m_cmd_2 ;
+
+        unsigned char  m_data_1 ;
+        unsigned char  m_data_2 ;
+
+        unsigned char  m_check_sum ;
+
+        void Print(std::ostream &os){
+            os << "start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n";
+
+            os << "m_sync \t"  << std::hex << (int) m_sync << "\n";
+            os << "m_address \t"  << std::hex << (int) m_address << "\n";
+            os << "m_cmd_1 \t"  << std::hex << (int) m_cmd_1 << "\n";
+            os << "m_cmd_2 \t"  << std::hex << (int) m_cmd_2 << "\n";
+            os << "m_data_1 \t"  << std::hex << (int) m_data_1 << "\n";
+            os << "m_data_2 \t"  << std::hex << (int) m_data_2 << "\n";
+            os << "m_check_sum \t"  << std::hex << (int) m_check_sum << "\n";
+            
+            os << "end   <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n";
+            os << endl;
+
+        }
+    };
+
+    auto gen_device_param = [](std::array<unsigned char, 2> &device_param, int hex_angle_x100){
+        device_param[0] = (hex_angle_x100 >> 8)& 0xff;
+        device_param[1] = (hex_angle_x100     )& 0xff;
+    };
+
+    auto calc_msg_chksum = [](pelco_d_info *frame, int param_size)->int{
+        if( frame == nullptr ){
+        return -1;
+        }
+
+        char * data = (char*)frame;
+        unsigned char ret_val = 0;
+        for(int i = 1; i <= param_size; ++i){
+            ret_val += data[i];
+        }
+
+        frame->m_check_sum = ret_val & 0xFF;
+        return ret_val;
+    };
+
+    auto calc_pix_offset_angle = [](int x_offset, int y_offset, double& angle_x, double& angle_y)
+    {
+        angle_x = x_offset/32.00;
+        angle_y = y_offset/32.00;
+    };
+
+    {
+        PtzTaskJson ptz_data;
+        JsonReader reader(R"({
+        "timestamp": 202101172047,
+        "function": "ptz",
+        "value": {
+            "cmd": "auto_exec",
+            "level_angle": 45,
+            "pitch_angle": 90,
+            "zoom_value": 180,
+            "focus_value": 360,
+            "save_url": "a/c/v"
+        }
+        })");
+
+        reader & ptz_data;
+        ptz_data.Print(cout);
+
+        pelco_d_info frame_info{0xff, 0x01, 0, 0, 0, 0, 0} ;
+        //  1>> 移动云台
+        //  level cmdbit
+        frame_info.m_cmd_1 = 0x00;
+        frame_info.m_cmd_2 = 0x4B;
+        std::array<unsigned char, 2> level_data{};
+        ptz_data.gen_device_param( level_data, PtzTaskJson::kLevel );
+        frame_info.m_data_1 = level_data[0];
+        frame_info.m_data_2 = level_data[1];
+        calc_msg_chksum(&frame_info, 5);
+        frame_info.Print(cout);
+
+        //  pitch cmdbit
+        frame_info.m_cmd_1 = 0x00;
+        frame_info.m_cmd_2 = 0x4D;
+        std::array<unsigned char, 2> pitch_data{};
+        ptz_data.gen_device_param( pitch_data, PtzTaskJson::kPitch );
+        frame_info.m_data_1 = pitch_data[0];
+        frame_info.m_data_2 = pitch_data[1];
+        calc_msg_chksum(&frame_info, 5);
+        frame_info.Print(cout);
+
+        //  2>> 计算像素偏移
+        int offset_x{};
+        int offset_y{};
+
+        double angle_x{};
+        double angle_y{};
+
+        string tmp_pic("/opt/move_tmp.jpg");
+
+        offset_x = 33;
+        offset_y = 65;
+//        if( light_api->fun_get_a_picture(tmp_pic) == 0 ){
+//            cv::Mat cur_pic = cv::imread(tmp_pic.toUtf8().data());
+//            cv::Mat original_pic = cv::imread( ptz_data.getSave_url() );
+//            CVObjTracking cc;
+//            cc.offset_detection(original_pic, cur_pic, &offset_x, &offset_y);
+//
+//            offset_x = 33;
+//            offset_y = 65;
+//        }
+        cout << "offset " << std::dec << offset_x <<" " << offset_y <<"\n";
+        calc_pix_offset_angle(offset_x, offset_y, angle_x, angle_y);
+        int move_l = angle_x*100 + ptz_data.getLevel_angle()*100;
+        int move_p = angle_y*100 + ptz_data.getPitch_angle()*100;
+        cout << " getLevel_angle " << ptz_data.getLevel_angle()
+        << " getPitch_angle " << ptz_data.getPitch_angle();
+
+        cout << "offset " << std::dec << angle_x <<" " << angle_y <<"\n"
+        <<  move_l << " " <<move_p << "\n";
+
+        //  二次校准调整云台
+        //      level
+        frame_info.m_cmd_1 = 0x00;
+        frame_info.m_cmd_2 = 0x4B;
+        ptz_data.gen_device_param(level_data, move_l) ;
+        frame_info.m_data_1 = level_data[0];
+        frame_info.m_data_2 = level_data[1];
+        calc_msg_chksum(&frame_info, 5);
+        frame_info.Print(cout);
+
+        //      pitch
+        frame_info.m_cmd_1 = 0x00;
+        frame_info.m_cmd_2 = 0x4D;
+        ptz_data.gen_device_param(pitch_data, move_p);
+        frame_info.m_data_1 = pitch_data[0];
+        frame_info.m_data_2 = pitch_data[1];
+        calc_msg_chksum(&frame_info, 5);
+        frame_info.Print(cout);
+
+        //  3>> 调整倍率焦距
+        //      zoom
+        frame_info.m_cmd_1 = 0x00;
+        frame_info.m_cmd_2 = 0x4F;
+        ptz_data.gen_device_param(pitch_data, PtzTaskJson::kZoom);
+        frame_info.m_data_1 = pitch_data[0];
+        frame_info.m_data_2 = pitch_data[1];
+        calc_msg_chksum(&frame_info, 5);
+        frame_info.Print(cout);
+
+         //      focus
+        frame_info.m_cmd_1 = 0x00;
+        frame_info.m_cmd_2 = 0x6F;
+        ptz_data.gen_device_param(pitch_data, PtzTaskJson::kFocus);
+        frame_info.m_data_1 = pitch_data[0];
+        frame_info.m_data_2 = pitch_data[1];
+        calc_msg_chksum(&frame_info, 5);
+        frame_info.Print(cout);
+
+    }
+}
+
+#include <numeric>
+
+TEST(zzzand, test){
+    int a = 10;  //  8 4 2 1
+    int b = (a&0x8);
+    cout << b << endl;
+
+    std::array<unsigned char, 7> level_cmd_ = {1,0xff,3,4,5,6,7};
+    unsigned char zzz = std::accumulate(level_cmd_.begin()+1, level_cmd_.end()-1, 0);
+    printf("%d\n", zzz);
+
 }
