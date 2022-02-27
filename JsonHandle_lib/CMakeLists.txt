@@ -3,7 +3,8 @@ project(JsonHandle_lib)
 
 set(HEADER_FILES Archiver/archiver.h
                  Capitalize/capitalize.h
-                 Condense/condense.h)
+                 Condense/condense.h
+                 Filter/filterkey.h)
 set(SOURCE_FILES Archiver/archiver.cpp Archiver/archiver_obj.h
         Archiver/PtzTaskJsonReader.cpp Archiver/PtzTaskJsonReader.h
         Archiver/mqtt_struct_ptz.h Archiver/mqtt_struct_switch.h
