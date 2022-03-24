@@ -496,3 +496,72 @@ TEST(task_payload, parse){
     std::cout << writer.GetString() << "\n";
 
 }
+
+TEST(string_move, std_move){
+    std::string tmp;
+    {
+        std::string move1("abc");
+        tmp = std::move(move1);
+        std::cout << tmp << "\n";
+    }
+    {
+        std::string move1("def");
+        tmp = std::move(move1);
+        std::cout << tmp << "\n";
+    }
+}
+
+class a{
+public:
+    a():aa("123"){};
+    std::string get_aa(){return aa;};
+private:
+    std::string aa;
+};
+
+TEST(a,aa){
+    a aaa;
+    std::string zz(std::move(aaa.get_aa()));
+    std::cout << aaa.get_aa() <<"\n";
+}
+
+#include <map>
+TEST(map_1,map){
+    std::map<int, std::string> map_1;
+    map_1[5] = "555";
+    map_1[1] = "111";
+    map_1[3] = "333";
+    map_1[4] = "333";
+
+
+    std::vector<int> list;
+    for(auto &[key, value]:map_1){
+        if(value == "333"){
+            list.push_back(key);
+        }
+    }
+
+
+
+
+}
+
+TEST(move_,str_move){
+    std::string a = "123";
+    auto f = [](const std::string& aa){
+        std::string z = std::move(aa);
+        std::cout << z ;
+    };
+    f(a);
+    std::cout << a;
+
+}
+
+TEST(arr, append){
+    std::array<unsigned char, 8> arr{};
+
+    memcpy(arr.data(),"123",3);
+
+    std::cout << arr.data() << "\n";
+
+}

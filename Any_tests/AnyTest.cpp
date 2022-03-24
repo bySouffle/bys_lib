@@ -461,9 +461,9 @@ TEST(enum_in_class, test){
     cout <<  ss.str() << "\n";
 }
 
-#include "archiver/PtzTaskJsonReader.h"
+#include "Archiver/PtzTaskJsonReader.h"
 
-
+#if 0
 TEST( ptz_parse_v2, test ){
     struct pelco_d_info
     {
@@ -632,7 +632,7 @@ TEST( ptz_parse_v2, test ){
 
     }
 }
-
+#endif
 #include <numeric>
 
 TEST(zzzand, test){
