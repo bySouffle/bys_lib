@@ -256,6 +256,7 @@ TEST(toupper_json, capitalize){
     std::cout << writeBuffer <<std::endl;
 }
 
+////////////////////////////////////////////////////////////////////////////////
 #include "Condense/condense.h"
 TEST(stdout_json, condense){
     using namespace rapidjson;
@@ -277,6 +278,38 @@ TEST(stdout_json, condense){
 
     //!     3. 校验输出
     validation_stdout(is, os);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+#include "Filter/filterkey.h"
+
+TEST(filter_key, filter){
+    using namespace rapidjson;
+
+    //!     1. 初始化读取文件流对象
+    Reader reader;
+    char readBuffer[65536];
+    FILE *read_fp = fopen("/Users/bysouffle/CLionProjects/bys_lib/JsonHandle_tests/test_json.txt", "r");
+    FileReadStream is(read_fp, readBuffer, sizeof(readBuffer));
+
+    //!     2. 初始化输出文件流对象
+    char writeBuffer[65536];
+    FILE * write_fp = fopen("/Users/bysouffle/CLionProjects/bys_lib/JsonHandle_tests/test_json_std.txt","w");
+    FileWriteStream os(read_fp, writeBuffer, sizeof(writeBuffer));
+    Writer<FileWriteStream> writer(os);
+
+    char filter_key[64] = "base_info";
+    std::cout << filter_key <<"\n";
+
+    FilterKeyHandler<Writer<FileWriteStream> > filter(writer,
+                                                      filter_key,
+                                                      static_cast<SizeType>(strlen(filter_key)));
+
+    if (!reader.Parse(is, filter)) {
+        fprintf(stderr, "\nError(%u): %s\n", static_cast<unsigned>(reader.GetErrorOffset()),
+                GetParseError_En(reader.GetParseErrorCode()));
+    }
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////
