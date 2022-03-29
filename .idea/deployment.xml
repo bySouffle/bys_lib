@@ -2,19 +2,7 @@
 <project version="4">
   <component name="PublishConfigData" remoteFilesAllowedToDisappearOnAutoupload="false">
     <serverData>
-      <paths name="docker_wsl2 (31018d4b-5e12-4a59-93b4-bbb8df8aa54b)">
-        <serverdata>
-          <mappings>
-            <mapping deploy="/tmp/tmp.ucjfzpNMEv" local="$PROJECT_DIR$" />
-          </mappings>
-          <excludedPaths>
-            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-debug" />
-            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-debug" />
-            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-release" />
-          </excludedPaths>
-        </serverdata>
-      </paths>
-      <paths name="opencv_env (bf1f34f3-0dd4-4620-aa8b-8d79a060462c)">
+      <paths name="docker_clion_ubuntu (6aa4c8e2-a4e6-4a74-8b3b-d263300df159)">
         <serverdata>
           <mappings>
             <mapping deploy="/tmp/bys_lib" local="$PROJECT_DIR$" />

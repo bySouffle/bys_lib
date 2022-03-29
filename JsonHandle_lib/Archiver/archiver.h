@@ -10,96 +10,95 @@
 
 ///     json读取器
 class JsonReader {
-public:
-    
-    //! <Constructor>   
-    //! \param json 读取的json
-    JsonReader(const char* json);
-    
-    //!  <Destructor>
-    ~JsonReader();
-    
-    //  >>>>>>>>>>>>    Json concept (Start)    >>>>>>>>>>>>>>>>>>
-    operator bool() const { return !mError; }
-    JsonReader& StartObject();
-    JsonReader& Member(const char* name);
-    bool HasMember(const char* name) const;
-    JsonReader& EndObject();
+ public:
 
-    JsonReader& StartArray(size_t* size = 0);
-    JsonReader& EndArray();
+  //! <Constructor>
+  //! \param json 读取的json
+  JsonReader(const char *json);
 
-    JsonReader& operator&(bool& b);
-    JsonReader& operator&(unsigned& u);
-    JsonReader& operator&(int& i);
-    JsonReader& operator&(double& d);
-    JsonReader& operator&(int64_t & l);
-    JsonReader& operator&(uint64_t & ul);
-    JsonReader& operator&(std::string& s);
+  //!  <Destructor>
+  ~JsonReader();
 
-    JsonReader& SetNull();
+  //  >>>>>>>>>>>>    Json concept (Start)    >>>>>>>>>>>>>>>>>>
+  operator bool() const { return !mError; }
+  JsonReader &StartObject();
+  JsonReader &Member(const char *name);
+  bool HasMember(const char *name) const;
+  JsonReader &EndObject();
 
-    static const bool IsReader = true;
-    static const bool IsWriter = !IsReader;
+  JsonReader &StartArray(size_t *size = 0);
+  JsonReader &EndArray();
 
-    //  <<<<<<<<<<<<    Json concept ( End )    <<<<<<<<<<<<<<<<<<
+  JsonReader &operator&(bool &b);
+  JsonReader &operator&(unsigned &u);
+  JsonReader &operator&(int &i);
+  JsonReader &operator&(double &d);
+  JsonReader &operator&(int64_t &l);
+  JsonReader &operator&(uint64_t &ul);
+  JsonReader &operator&(std::string &s);
 
-private:
-    JsonReader(const JsonReader&);
-    JsonReader& operator=(const JsonReader&);
+  JsonReader &SetNull();
 
-    void Next();
+  static const bool IsReader = true;
+  static const bool IsWriter = !IsReader;
 
-    // PIMPL(Pointer to Implementation)
-    void* mDocument;              ///< DOM result of parsing.
-    void* mStack;                 ///< Stack for iterating the DOM
-    bool mError;                  ///< Whether an error has occurred.
+  //  <<<<<<<<<<<<    Json concept ( End )    <<<<<<<<<<<<<<<<<<
+
+ private:
+  JsonReader(const JsonReader &);
+  JsonReader &operator=(const JsonReader &);
+
+  void Next();
+
+  // PIMPL(Pointer to Implementation)
+  void *mDocument;              ///< DOM result of parsing.
+  void *mStack;                 ///< Stack for iterating the DOM
+  bool mError;                  ///< Whether an error has occurred.
 };
-
 
 ///     json生成器
 class JsonWriter {
-public:
-    /// Constructor.
-    JsonWriter();
+ public:
+  /// Constructor.
+  JsonWriter();
 
-    /// Destructor.
-    ~JsonWriter();
+  /// Destructor.
+  ~JsonWriter();
 
-    /// Obtains the serialized JSON string.
-    const char* GetString() const;
+  /// Obtains the serialized JSON string.
+  const char *GetString() const;
 
-    // Archive concept
+  // Archive concept
 
-    operator bool() const { return true; }
+  operator bool() const { return true; }
 
-    JsonWriter& StartObject();
-    JsonWriter& Member(const char* name);
-    bool HasMember(const char* name) const;
-    JsonWriter& EndObject();
+  JsonWriter &StartObject();
+  JsonWriter &Member(const char *name);
+  bool HasMember(const char *name) const;
+  JsonWriter &EndObject();
 
-    JsonWriter& StartArray(size_t* size = 0);
-    JsonWriter& EndArray();
+  JsonWriter &StartArray(size_t *size = 0);
+  JsonWriter &EndArray();
 
-    JsonWriter& operator&(bool& b);
-    JsonWriter& operator&(unsigned& u);
-    JsonWriter& operator&(int& i);
-    JsonWriter& operator&(double& d);
-    JsonWriter& operator&(int64_t & l);
-    JsonWriter& operator&(uint64_t & ul);
-    JsonWriter& operator&(std::string& s);
-    JsonWriter& SetNull();
+  JsonWriter &operator&(bool &b);
+  JsonWriter &operator&(unsigned &u);
+  JsonWriter &operator&(int &i);
+  JsonWriter &operator&(double &d);
+  JsonWriter &operator&(int64_t &l);
+  JsonWriter &operator&(uint64_t &ul);
+  JsonWriter &operator&(std::string &s);
+  JsonWriter &SetNull();
 
-    static const bool IsReader = false;
-    static const bool IsWriter = !IsReader;
+  static const bool IsReader = false;
+  static const bool IsWriter = !IsReader;
 
-private:
-    JsonWriter(const JsonWriter&);
-    JsonWriter& operator=(const JsonWriter&);
+ private:
+  JsonWriter(const JsonWriter &);
+  JsonWriter &operator=(const JsonWriter &);
 
-    // PIMPL idiom
-    void* mWriter;      ///< JSON writer.
-    void* mStream;      ///< Stream buffer.
+  // PIMPL idiom
+  void *mWriter;      ///< JSON writer.
+  void *mStream;      ///< Stream buffer.
 };
 
 #endif //BYS_LIB_ARCHIVER_H
