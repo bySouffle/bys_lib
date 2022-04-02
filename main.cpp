@@ -38,7 +38,7 @@ void *send_data(void *){
     while (1){
         int fd = socket(AF_INET,SOCK_STREAM,0);
         if(fd < 0){
-            print("FD Create fail\r\n");
+            Print("FD Create fail\r\n");
         }
         sockaddr_in addr;
         addr.sin_port = htons(50022);
@@ -52,26 +52,26 @@ void *send_data(void *){
         sleep(5);
         ret_val = connect(fd,(struct sockaddr*)&server_addr,sizeof (struct sockaddr));
 
-        print("connect ret %d %s\r\n", ret_val, strerror(errno));
+        Print("connect ret %d %s\r\n", ret_val, strerror(errno));
         if( ret_val >= 0){
             sleep(1);
             while (1)
             {
-//                print("send error\r\n");
+//                Print("send error\r\n");
                 send_len = send(fd,send_buf,100,0);
-                print("send  %s\r\n", strerror(errno));
+                Print("send  %s\r\n", strerror(errno));
 
                 if(send_len <= 0 ){
-                    print("send error\r\n");
+                    Print("send error\r\n");
                     break;
                 }
 
                 recv_len = recv(fd,recv_buf,10,0);
                 if(recv_len < 0){
-                    print("recv error\r\n");
+                    Print("recv error\r\n");
                     break;
                 }
-                print("Recvbuf %s\r\n",recv_buf);
+                Print("Recvbuf %s\r\n",recv_buf);
                 close(fd);
                 break;
             }
@@ -141,16 +141,18 @@ int main() {
         write(pip[1],"epoll!\n",8);
     }
 #endif
-    printf("ZZZZZZZZZZZ\n");
-    pthread_t pid;
-    pthread_create(&pid,NULL, send_data,NULL);
+//    printf("ZZZZZZZZZZZ\n");
+//    pthread_t pid;
+//    pthread_create(&pid,NULL, send_data,NULL);
+//
+//
+//    EpollServer *epollServer = new EpollServer;
+////    epollServer->epoll_udp_server_init( udp_echo_callback, 10);
+//    epollServer->epoll_tcp_server_init(tcp_recv_echo_callback, 1000);
+//    epollServer->epoll_server_start();
+//    epollServer->epoll_server_delete();
 
 
-    EpollServer *epollServer = new EpollServer;
-//    epollServer->epoll_udp_server_init( udp_echo_callback, 10);
-    epollServer->epoll_tcp_server_init(tcp_recv_echo_callback, 1000);
-    epollServer->epoll_server_start();
-    epollServer->epoll_server_delete();
 
 
 }

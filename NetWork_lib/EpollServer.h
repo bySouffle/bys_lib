@@ -21,9 +21,9 @@
 #define __DEBUG__
 
 #ifdef __DEBUG__
-#define print(format,...) printf("file: " __FILE__ "line: %d " format "\n", __LINE__ , ##__VA_ARGS__ )
+#define Print(format,...) printf("file: " __FILE__ "line: %d " format "\n", __LINE__ , ##__VA_ARGS__ )
 #elif
-#define print(format,...)
+#define Print(format,...)
 #endif
 
 typedef enum EPOLL_SERVER_TYPE{

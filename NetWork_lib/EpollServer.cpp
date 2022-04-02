@@ -245,7 +245,7 @@ void EpollServer::server_tcp_client_handle(int accept_fd, epoll_server_t *server
 
     while ( (len = recv(accept_fd, recv_buf, sizeof (recv_buf), 0)) > 0) {
         scalable_buff.push_vecbuf(recv_buf,len);
-        print("SERVER RECV DATA: %s\r\n", scalable_buff.get_data());
+        Print("SERVER RECV DATA: %s\r\n", scalable_buff.get_data());
     }
 
     if (len == 0){
@@ -253,7 +253,7 @@ void EpollServer::server_tcp_client_handle(int accept_fd, epoll_server_t *server
         epoll_ctl(server_->epfd, EPOLL_CTL_DEL, accept_fd, &ev);
         close(accept_fd);
     } else if (len < 0 && errno != EAGAIN){
-        print("recv-error\r\n");
+        Print("recv-error\r\n");
     }
 
     if(scalable_buff.get_used() > 0){
@@ -282,7 +282,7 @@ int EpollServer::epoll_udp_server_init( udp_recv_callback handler, int max_clien
 
 void udp_echo_callback(int fd, struct sockaddr_in *client_addr, const char *data, unsigned int len,
                                     void *reserved) {
-    print(">> client addr = %s:%d\r\n", inet_ntoa(client_addr->sin_addr), ntohs(client_addr->sin_port));
+    Print(">> client addr = %s:%d\r\n", inet_ntoa(client_addr->sin_addr), ntohs(client_addr->sin_port));
     printf("Recv: %s\r\n", data);
     sendto(fd, data, len, 0, (struct sockaddr* )client_addr, sizeof(struct sockaddr_in));
 }

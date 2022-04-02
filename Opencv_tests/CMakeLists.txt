@@ -1,7 +1,5 @@
 # project name
-project(Precautions)
-
-set(CMAKE_CXX_STANDARD 20)
+project(Opencv_lib_tests)
 
 #add_subdirectory(/googletest-1.10.x)
 # gtest source
@@ -9,11 +7,12 @@ set(gtest_SOURCE_DIR /googletest-1.10.x/googletest)
 include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 
 # test code
-set(TEST_SOURCES ./notice.cpp macro_define.h macro_define.cpp)
+set(TEST_SOURCES OpencvTest.cpp)
 # adding the gtest_run target
-add_executable(Precautions ${TEST_SOURCES})
+add_executable(Opencv_lib_tests_run ${TEST_SOURCES})
 
 # linking File_lib_tests_run with lib which will be tested
 #set(TEST_LIB /NetWork_lib)
+target_link_libraries(Opencv_lib_tests_run Opencv_lib)
 
-target_link_libraries(Precautions gtest gtest_main)
+target_link_libraries(Opencv_lib_tests_run gtest gtest_main)
