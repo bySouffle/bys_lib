@@ -27,7 +27,7 @@ void PrintBinary(unsigned int value){
 #define PRINT_WCHAR(char_value)     PRINTLN(#char_value": %lc",char_value)
 #define PRINT_INT(int_value)        PRINTLN(#int_value": %d",int_value)
 #define PRINT_LONG(long_value)      PRINTLN(#long_value" %ld",long_value)
-#define PRINT_LLONG(long_value)     PRINTLN(#long_value" %lld",long_value)
+#define PRINT_LONGLONG(long_value)  PRINTLN(#long_value" %lld",long_value)
 #define PRINT_BINARY(int_value)     PrintBinary((unsigned int) int_value);
 #define PRINT_HEX(int_value)        PRINTLN(#int_value": %#x",int_value)
 #define PRINT_BOOL(bool_value)      PRINTLN(#bool_value": %s",bool_value?"true":"false")

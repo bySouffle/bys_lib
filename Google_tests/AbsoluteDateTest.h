@@ -5,10 +5,9 @@
 #ifndef BYS_LIB_ABSOLUTEDATETEST_H
 #define BYS_LIB_ABSOLUTEDATETEST_H
 
-#include "AbsoluteDateTest.h"
 #include "gtest/gtest.h"
 
-class AbsoluteDateTest : public gtest{
+class AbsoluteDateTest {
 
 };
 

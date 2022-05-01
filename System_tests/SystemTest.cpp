@@ -103,7 +103,7 @@ TEST(macro_define, PRINT_LONG) {
 }
 
 TEST(macro_define, PRINT_LLONG) {
-  PRINT_LLONG(LONG_LONG_MAX);
+  PRINT_LONGLONG(LONG_LONG_MAX);
 }
 
 TEST(macro_define, PRINT_BINARY) {
@@ -151,3 +151,20 @@ TEST(macro_define, PRINT_DOUBLE_ARRAY) {
   double d[5]{1.1, 2.2, 3.3, 4.4, 5.5};
   PRINT_DOUBLE_ARRAY(d, 5);
 }
+
+#include <random>
+TEST(suffle, test){
+  int arr[100]={};
+  std::cout << (sizeof(arr)/sizeof (int) ) << "\n";
+
+  auto f = [](int *arr, int len){
+    srand(time(NULL));
+    std::cout << (sizeof(*arr)/sizeof (int)) << "\n";
+    for (int i = 0; i < len; ++i) {
+      *(arr+i) = rand()%100;
+    }
+  };
+  f(arr,100);
+  PRINT_INT_ARRAY_LN(arr,100);
+}
+

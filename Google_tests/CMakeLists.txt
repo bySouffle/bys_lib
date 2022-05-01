@@ -2,13 +2,14 @@
 project(Google_tests)
 
 # google test sources
-add_subdirectory(lib)
 
-set(gtest_SOURCE_DIR /lib/googletest)
+set(gtest_SOURCE_DIR /googletest-1.10.x/googletest)
 include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 
-#add_executable(Google_Tests_run test1.cpp tests2.cpp)
-target_link_libraries(Google_Tests_run DateConverter_lib)
-add_executable(Google_Tests_run AbsoluteDateTest.cpp ConverterTests.cpp)
+set(HEADER AbsoluteDateTest.h ConverterTests.h)
+set(SOURCE AbsoluteDateTest.cpp ConverterTests.cpp)
 
-target_link_libraries(Google_Tests_run gtest gtest_main)
+#add_executable(Google_Tests_run test1.cpp tests2.cpp)
+add_executable(Google_tests ${HEADER} ${SOURCE} )
+
+target_link_libraries(Google_tests gtest gtest_main)
