@@ -36,8 +36,8 @@ add_subdirectory(TypeConversion_lib)
 add_subdirectory(System_lib)
 add_subdirectory(DataBase_lib)
 add_subdirectory(JsonHandle_lib)
-add_subdirectory(Opencv_lib)
-add_subdirectory(Qt_lib)
+#add_subdirectory(Opencv_lib)
+#add_subdirectory(Qt_lib)
 
 target_link_libraries(bys_lib File_lib NetWork_lib TypeConversion_lib Opencv_lib pthread)
 
@@ -50,9 +50,9 @@ add_subdirectory(Any_tests)
 add_subdirectory(DataBase_tests)
 add_subdirectory(JsonHandle_tests)
 add_subdirectory(Precautions)
-add_subdirectory(Opencv_tests)
-add_subdirectory(Qt_tests)
-add_subdirectory(Libhv_tests)
+#add_subdirectory(Opencv_tests)
+#add_subdirectory(Qt_tests)
+#add_subdirectory(Libhv_tests)
 
 add_subdirectory(Leetcode_tests)
 

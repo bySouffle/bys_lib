@@ -5,7 +5,7 @@ project(Leetcode_tests)
 # gtest source
 set(gtest_SOURCE_DIR /googletest-1.10.x/googletest)
 include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
-
+include_directories(../System_lib)
 
 # test code
 set(TEST_SOURCES leetcode_tests.cpp )

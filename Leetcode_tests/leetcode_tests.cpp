@@ -21,20 +21,20 @@ TEST(bit_spacing, test) {
     //  按位与之后求最长, 位数
     for (int i = 0; i < 32; ++i) {
       //  第i位=1
-      if( (n>>i)&1 ){
+      if ((n >> i) & 1) {
         index_start = index_end;
         index_end = i;
 
-        if(index_start == -1)  continue;
+        if (index_start == -1) continue;
 
-        cnt = (index_end - index_start) > cnt ? (index_end - index_start): cnt ;
+        cnt = (index_end - index_start) > cnt ? (index_end - index_start) : cnt;
 
       }
     }
     return cnt;
   };
 
-  cout << f(5) << (1>>1);
+  cout << f(5) << (1 >> 1);
 }
 
 /**
@@ -49,28 +49,28 @@ int pick(int target) 从 nums 中选出一个满足 nums[i] == target 的随机�
  * **/
 
 #include <map>
-TEST(random_index, test){
+TEST(random_index, test) {
   class Solution {
    public:
-    Solution(vector<int>& nums) {
+    Solution(vector<int> &nums) {
       for (int i = 0; i < nums.size(); ++i) {
         save[nums[i]].push_back(i);
       }
     }
 
-    map<int ,vector<int>> save;
+    map<int, vector<int>> save;
     int pick(int target) {
-      return save[target][rand()%(save[target].size()) ] ;
+      return save[target][rand() % (save[target].size())];
 
     }
   };
-  vector<int > vec{1, 2, 3, 3, 3};
+  vector<int> vec{1, 2, 3, 3, 3};
   Solution solution(vec);
-  cout<< solution.pick(3) << "\n";
-  cout<< solution.pick(1) << "\n";
-  cout<< solution.pick(3) << "\n";
-  cout<< solution.pick(3) << "\n";
-  cout<< solution.pick(3) << "\n";
+  cout << solution.pick(3) << "\n";
+  cout << solution.pick(1) << "\n";
+  cout << solution.pick(3) << "\n";
+  cout << solution.pick(3) << "\n";
+  cout << solution.pick(3) << "\n";
 
 }
 
@@ -88,20 +88,19 @@ TEST(random_index, test){
 
  * **/
 
-TEST(sum, test){
+TEST(sum, test) {
   class Solution {
    public:
     vector<int> twoSum(vector<int> nums, int target) {
 
-
-      if (nums.size() == 2){
-        return {0,1};
+      if (nums.size() == 2) {
+        return {0, 1};
       }
 
-      for (int i = 0; i < nums.size()-1; ++i) {
-        for (int j = i+1; j < nums.size(); ++j) {
-          if (nums[i] + nums[j] == target){
-            return {i,j};
+      for (int i = 0; i < nums.size() - 1; ++i) {
+        for (int j = i + 1; j < nums.size(); ++j) {
+          if (nums[i] + nums[j] == target) {
+            return {i, j};
           }
         }
       }
@@ -110,7 +109,7 @@ TEST(sum, test){
   };
 
   Solution s;
-  vector<int > res = s.twoSum({3,2,4},6);
+  vector<int> res = s.twoSum({3, 2, 4}, 6);
   cout << res[0] << " " << res[1];
 }
 
@@ -129,16 +128,15 @@ TEST(sum, test){
 
  * **/
 
-TEST(volume_projection_area,test){
+TEST(volume_projection_area, test) {
   class Solution {
    public:
     int projectionArea(vector<vector<int>> grid) {
       int x = 0;
       int y = 0;
       int z = 0;
-      vector<int > temp_y ;
+      vector<int> temp_y;
       temp_y.resize(grid.size());
-
 
       for (int i = 0; i < grid.size(); ++i) {
         int temp_x = 0;
@@ -149,26 +147,24 @@ TEST(volume_projection_area,test){
           //  y
           temp_y[j] = max(temp_y[j], grid[i][j]);
           //  z
-          if (grid[i][j]!=0){
-            z+=1;
+          if (grid[i][j] != 0) {
+            z += 1;
           }
         }
-
 
         x += temp_x;
 //        temp_y = 0;
       }
-      for (auto&it: temp_y) {
-        y+=it;
+      for (auto &it : temp_y) {
+        y += it;
       }
-      return (x+y+z );
-
+      return (x + y + z);
 
     }
   };
 
   Solution s;
-  cout<< s.projectionArea({ {1,0},{0,2} });
+  cout << s.projectionArea({{1, 0}, {0, 2}});
 }
 
 /**
@@ -183,37 +179,35 @@ TEST(volume_projection_area,test){
 
 
 #include <stack>
-TEST(number_of_palindromes, test){
+TEST(number_of_palindromes, test) {
   class Solution {
    public:
     bool isPalindrome(int x) {
-      if (x<0){
+      if (x < 0) {
         return false;
       }
       std::string nums(std::to_string(x));
 
-
-      for (int i = 0; i < nums.size()/2; ++i) {
-        if(nums.at(i) == nums.at(nums.size()-i-1)){
+      for (int i = 0; i < nums.size() / 2; ++i) {
+        if (nums.at(i) == nums.at(nums.size() - i - 1)) {
           return false;
         }
       }
       return true;
       std::stack<char> st_;
-      for(auto& item:nums){
+      for (auto &item : nums) {
         st_.emplace(item);
       }
-      for (int i = 0; i < nums.size()/2; ++i) {
-        if (st_.top() == nums.at(i)){
+      for (int i = 0; i < nums.size() / 2; ++i) {
+        if (st_.top() == nums.at(i)) {
           st_.pop();
-        } else{
+        } else {
           return false;
         }
       }
       return true;
     }
   };
-
 
   Solution s;
   cout << s.isPalindrome(112211);
@@ -242,7 +236,7 @@ C 可以放在 D (500) 和 M (1000) 的左边，来表示 400 和 900。
  * **/
 
 #include <unordered_map>
-TEST(roman_number, test){
+TEST(roman_number, test) {
   class Solution {
    public:
     int romanToInt(string s) {
@@ -255,49 +249,52 @@ TEST(roman_number, test){
         map[i] = s.at(i);
       }
 
-      for (auto & itr : map){
+      for (auto &itr : map) {
         if (itr.second == 'M')
-        index = itr.first;
+          index = itr.first;
         cnt += 1000;
       }
-      for (auto & itr : map){
-        if (itr.second == 'D' && index > itr.first){
+      for (auto &itr : map) {
+        if (itr.second == 'D' && index > itr.first) {
           cnt += 500;
-        } else{
+        } else {
           index = itr.first;
-          cnt -=500;
+          cnt -= 500;
         };
       }
-      for (auto & itr : map){
-        if (itr.second == 'C' && index > itr.first){
+      for (auto &itr : map) {
+        if (itr.second == 'C' && index > itr.first) {
           cnt += 500;
-        } else{
+        } else {
           index = itr.first;
-          cnt -=500;
+          cnt -= 500;
         };
       }
-      for (auto & itr : map){
-        if (itr.second == 'L' && index > itr.first){
+      for (auto &itr : map) {
+        if (itr.second == 'L' && index > itr.first) {
           cnt += 500;
-        } else{
+        } else {
           index = itr.first;
-          cnt -=500;
+          cnt -= 500;
         };
-      }      for (auto & itr : map){
-        if (itr.second == 'X' && index > itr.first){
+      }
+      for (auto &itr : map) {
+        if (itr.second == 'X' && index > itr.first) {
           cnt += 500;
-        } else{
+        } else {
           index = itr.first;
-          cnt -=500;
+          cnt -= 500;
         };
-      }      for (auto & itr : map){
-        if (itr.second == 'V' && index > itr.first){
+      }
+      for (auto &itr : map) {
+        if (itr.second == 'V' && index > itr.first) {
           cnt += 500;
-        } else{
+        } else {
           index = itr.first;
-          cnt -=500;
+          cnt -= 500;
         };
-      }      for (auto & itr : map) {
+      }
+      for (auto &itr : map) {
         if (itr.second == 'I' && index > itr.first) {
           cnt += 500;
         } else {
@@ -307,13 +304,129 @@ TEST(roman_number, test){
 
       }
 
-      
       return cnt;
-   }
+    }
   };
-
 
   Solution s;
   cout << s.romanToInt("LVIII");
 }
 
+/**
+ * 26. 删除有序数组中的重复项
+ * 输入：nums = [0,0,1,1,1,2,2,3,3,4]
+    输出：5, nums = [0,1,2,3,4]
+ * **/
+#include "io_units.h"
+TEST(set_func, test) {
+  class Solution {
+   public:
+    int removeDuplicates(vector<int> &nums) {
+      if (nums.empty()) {
+        return 0;
+      }
+      if (nums.size() == 1) {
+        return 1;
+      }
+      vector<int> tmp{nums.at(0)};
+      int index = 0;
+      for (int i = 1; i < nums.size(); ++i) {
+        if (tmp.at(index) != nums.at(i)) {
+          tmp.emplace_back(nums.at(i));
+          index++;
+        }
+      }
+      nums = std::move(tmp);
+      return nums.size();
+
+    }
+  };
+
+  Solution s;
+  vector<int> zzz{0, 0, 1, 1, 1, 2, 2, 3, 3, 4};
+  cout << s.removeDuplicates(zzz);
+  PRINT_INT_ARRAY(zzz.data(), zzz.size());
+}
+
+/**
+ * 27. 移除元素
+ * 输入：nums = [3,2,2,3], val = 3
+    输出：2, nums = [2,2]
+ * **/
+TEST(remove_target_func, test) {
+  class Solution {
+   public:
+    int removeElement(vector<int> &nums, int val) {
+//      for (int i = 0; i < nums.size(); ++i) {
+//        if (nums.at(i) == val) {
+//          nums.erase(nums.begin() + i);
+//        }
+      auto it = remove(nums.begin(),nums.end(), val);
+      nums.erase(it, nums.end());
+      return nums.size();
+
+      }
+
+
+  };
+
+  Solution s;
+  vector<int>nums{0,1,2,2,3,0,4,2};
+  cout << s.removeElement(nums,2) << "\n";
+  PRINT_INT_ARRAY(nums.data(), nums.size());
+
+}
+
+/**
+ * 28. 实现 strStr()
+ * 输入：haystack = "hello", needle = "ll"
+    输出：2
+ * **/
+TEST(strstr, test) {
+  class Solution {
+   public:
+    int strStr(string haystack, string needle) {
+      if (haystack.size() == 0 || needle.size() == 0 ){
+        return 0;
+      }
+      if (haystack.size() < needle.size()){
+        return -1;
+      }
+
+      int i = 0;
+      while ( !(i==haystack.size()) ){
+        if (haystack.at(i) == needle.at(0)){
+          int k = i;
+          if (needle.size() == 1){
+            return i;
+          }
+          if (i + needle.size() > haystack.size()){
+            break;
+          }
+          for (int j = 1; j < needle.size(); ++j) {
+
+            if (haystack.at(i+j)!=needle.at(j)){
+//              i = i+j;
+              i = k + 1;
+              break;
+
+            }
+            if (j == (needle.size() -1)){
+              return i;
+            }
+          }
+        } else{
+          i++;
+        }
+
+      }
+      return -1;
+  };
+
+
+  };
+
+  Solution s;
+  cout << s.strStr("a","a") << "\n";
+
+}
