@@ -5,7 +5,7 @@ project(bys_lib)
 set(CMAKE_CXX_STANDARD 14)
 
 # 编译google test生成libtest.a静态库
-add_subdirectory(./googletest-1.10.x)
+add_subdirectory(googletest-1.10.x)
 
 set(mode_file
         NetWork_lib/TcpOpt.cpp NetWork_lib/TcpOpt.h
@@ -38,6 +38,7 @@ add_subdirectory(DataBase_lib)
 add_subdirectory(JsonHandle_lib)
 #add_subdirectory(Opencv_lib)
 #add_subdirectory(Qt_lib)
+add_subdirectory(OpenPano_tests)
 
 target_link_libraries(bys_lib File_lib NetWork_lib TypeConversion_lib Opencv_lib pthread)
 
@@ -50,7 +51,7 @@ add_subdirectory(Any_tests)
 add_subdirectory(DataBase_tests)
 add_subdirectory(JsonHandle_tests)
 add_subdirectory(Precautions)
-#add_subdirectory(Opencv_tests)
+add_subdirectory(Opencv_tests)
 #add_subdirectory(Qt_tests)
 #add_subdirectory(Libhv_tests)
 

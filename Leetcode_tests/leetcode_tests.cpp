@@ -313,6 +313,76 @@ TEST(roman_number, test) {
 }
 
 /**
+ * 14. 最长公共前缀
+
+ 编写一个函数来查找字符串数组中的最长公共前缀。
+
+如果不存在公共前缀，返回空字符串""。
+
+
+示例 1：
+
+输入：strs = ["flower","flow","flight"]
+输出："fl"
+示例 2：
+
+输入：strs = ["dog","racecar","car"]
+输出：""
+解释：输入不存在公共前缀。
+
+
+ * **/
+TEST(longest_common_prefix, test){
+  class Solution {
+   public:
+    string longestCommonPrefix(vector<string> strs) {
+      if(strs.size() == 0){
+        return {};
+      }
+      if (strs.size() == 1){
+        return strs.at(0);
+      }
+
+      int cnt = strs.at(0).size();
+
+      if (cnt == 0){
+        return {strs.at(0)};
+      }
+
+      for(int i = 1; i < strs.size(); ++i){
+        if(strs.at(i).size() < cnt){
+          cnt = strs.at(i).size();
+          min_index = i;
+        }
+      }
+
+      for(int i = 0; i <strs.at(min_index).size(); ++i){
+        comm_str.push_back(strs.at(min_index).at(i));
+        for(int j = 0 ; j < strs.size(); ++j){
+          if(strs.at(j).at(i) == comm_str.at(i) ){
+
+          }else{
+//            break;
+            comm_str.at(i)='\0';
+            comm_str.pop_back();
+            return {comm_str.data()};
+          }
+        }
+      }
+
+    }
+
+    vector<char> comm_str;
+
+    int min_index = 0;
+    int min_cnt = 0;
+  };
+
+  Solution s;
+  cout << s.longestCommonPrefix({"a"});
+
+}
+/**
  * 26. 删除有序数组中的重复项
  * 输入：nums = [0,0,1,1,1,2,2,3,3,4]
     输出：5, nums = [0,1,2,3,4]
