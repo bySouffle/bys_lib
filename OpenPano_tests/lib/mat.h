@@ -5,13 +5,11 @@
 #ifndef BYS_LIB_OPENPANO_TESTS_LIB_MAT_H_
 #define BYS_LIB_OPENPANO_TESTS_LIB_MAT_H_
 
-#pragma once
-
 #include <memory>
 #include <cstring>
 #include "debugutils.h"
 
-//! 矩阵
+//! n维矩阵
 //! \tparam T 矩阵内元素type
 template <typename T>
 class Mat {
