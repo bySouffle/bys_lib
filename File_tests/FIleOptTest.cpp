@@ -4,6 +4,7 @@
 
 #include "gtest/gtest.h"
 #include "FileOpt.h"
+#include<stdarg.h>
 
 class FileOptTest : public ::testing::Test {
  protected:

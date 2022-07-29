@@ -7,7 +7,7 @@ set(gtest_SOURCE_DIR /googletest-1.10.x/googletest)
 include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 
 # test code
-set(TEST_SOURCES archiver_tests.cpp )
+set(TEST_SOURCES archiver_tests.cpp nlohmann_tests.cpp)
 # adding the gtest_run target
 add_executable(JsonHandle_tests_run ${TEST_SOURCES})
 

@@ -235,13 +235,14 @@ TEST_F(NetBaseTest, readv_writev) {
                     struct stat file_stat = {};
                     int file_valid = true;
                     int len = 0;
-                    if (stat("Makefile", &file_stat) < 0) {
+                    if (stat("/tmp/test.log", &file_stat) < 0) {
                         file_valid = false;
                     } else {
                         if (S_ISDIR(file_stat.st_mode)) {
                             file_valid = false;
                         } else if (file_stat.st_mode & S_IROTH) {
-                            int file_fd = open("Makefile", 0775);
+//                            int file_fd = open("/tmp/test.log", 0775);
+                            int file_fd = open("/tmp/test.log", O_CREAT | O_WRONLY | O_TRUNC, 0600);
                             file_buf = new char[file_stat.st_size + 1];
                             memset(file_buf, 0, sizeof(file_buf));
                             if (read(file_fd, file_buf, file_stat.st_size) < 0) {
@@ -617,4 +618,100 @@ TEST_F(EpollServerTest, udpserver){
     epollServer->epoll_udp_server_init( udp_echo_callback, 10);
     epollServer->epoll_server_start();
     epollServer->epoll_server_delete();
+}
+
+/* Include necessary libraries */
+#include <arpa/inet.h>      // inet_ntop()
+#include <netinet/in.h>
+//--//
+#include "check_ip.h"
+//--//
+#include <iostream>
+#include <string>
+#if 0
+TEST(ping , ip){
+  addrinfo* result;
+  sockaddr_in* pDestinationAddr;
+  char ipString[INET_ADDRSTRLEN];
+
+  // get IP Address and store in 'result' (passed by reference)
+  if (getIPAddress("127.0.0.1", result) != 0) {
+    std::cout << "Invalid IP Address. Terminating ...\n";
+    exit(EXIT_FAILURE);
+  }
+  else {
+    pDestinationAddr = (sockaddr_in*)result->ai_addr;                           // get struct from resulting linked list
+    void* address;
+    address = &pDestinationAddr->sin_addr;                                      // store IP Address
+    inet_ntop(result->ai_family, address, ipString, sizeof(ipString));          // convert binary IP to string
+    std::cout << "IP: " << ipString << std::endl;
+  }
+
+  // get appropriate socket file descriptor
+  int socketFD = socket(PF_INET, SOCK_RAW, IPPROTO_ICMP);
+  if (socketFD < 0) {
+    std::cout << socketFD << "Socket File Descriptor creation failed .\n";
+    close(socketFD);
+    exit(EXIT_FAILURE);
+  }
+  else {
+    std::cout << "Socket File Descriptor: " << socketFD << std::endl;
+  }
+
+  // set socket option to TTL (time to live)
+  if (setsockopt(socketFD, IPPROTO_IP, IP_TTL, &TimeToLive, sizeof(TimeToLive)) != 0) {
+    std::cout << "Setting Socket Options failed.\n";
+    exit(EXIT_FAILURE);
+  }
+  else {  // for debugging purposes
+    std::cout << "Socket Option Set to TTL.\n";
+  }
+
+  // declare and initialize struct
+  timeval TimeOut = {ReceivalTimeOut, 0};
+
+  // set timeout of receival
+  if (setsockopt(socketFD, SOL_SOCKET, SO_RCVTIMEO, (const char*)&TimeOut, sizeof(TimeOut)) != 0) {
+    std::cout << "Setting Timeout for Receival failed.\n";
+    exit(EXIT_FAILURE);
+  }
+  else {  // for debugging purposes
+    std::cout << "Timeout for receival set.\n";
+  }
+
+  // free linked list before infinite loop
+  freeaddrinfo(result);
+
+  // variables to track packets
+  int transmitted = 0;
+
+  std::cout << "\n-----\n\n";
+
+  int success = 0, failure = 0;
+
+  // ping in infinite loop
+  for (;;) {
+    int flag = sendPing(socketFD, transmitted, pDestinationAddr, success, failure);
+
+    if (flag != -1) {
+      // add delay of 0.5 sec
+      usleep(500000);
+    }
+  }
+
+  // never reached
+  close(socketFD);
+
+}
+#endif
+
+TEST(ping_func , test){
+  PingFunc func("192.168.100.186");
+  if (func.config() != 0){
+    std::cout <<  " ping error\n";
+  }
+  func.start_ping();
+  sleep(2);
+  func.channel_ping();
+
 }

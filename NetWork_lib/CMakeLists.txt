@@ -16,7 +16,7 @@ set(SOURCE_FILES
         PipeOpt.cpp
         dsp_socket.cpp
         dsp_udpsocket.cpp
-        EpollServer.cpp ScalableBuff.cpp ScalableBuff.h)
+        EpollServer.cpp ScalableBuff.cpp ScalableBuff.h check_ip.cpp check_ip.h)
 
 # add lib
 add_library(NetWork_lib STATIC ${SOURCE_FILES} ${HEADER_FILES})
